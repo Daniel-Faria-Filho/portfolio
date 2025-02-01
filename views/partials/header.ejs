@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel B. Faria Filho - Aviation & Programming</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo-section">
+
+                <div class="name">&lt;Daniel.Faria&gt;</div>
+            </a>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <% if (locals.user) { %>
+                        <li class="profile-dropdown">
+                            <div class="profile-trigger">
+                                <% if (user.getAvatar()) { %>
+                                    <img src="<%= user.getAvatar() %>" alt="Profile" class="profile-pic">
+                                <% } else { %>
+                                    <div class="initials-avatar">
+                                        <%= user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2) %>
+                                    </div>
+                                <% } %>
+                                <span class="user-name"><%= user.name %></span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="/profile">
+                                    <i class="fas fa-user"></i>
+                                    My Profile
+                                </a></li>
+                                <li><a href="/billing-management">
+                                    <i class="fas fa-credit-card"></i>
+                                    Billing
+                                </a></li>
+                                <li><a href="/settings">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a></li>
+                                <li class="divider"></li>
+                                <li><a href="/auth/logout" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    <% } else { %>
+                        <li><a href="/auth/login" class="auth-button">Login</a></li>
+                    <% } %>
+                </ul>
+            </nav>
+
+            <button class="menu-toggle">☰</button>
+        </div>
+    </header>
+    <main>
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mainNav = document.querySelector('.main-nav');
+        const body = document.body;
+
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('show');
+            menuToggle.classList.toggle('active');
+            body.classList.toggle('menu-open');
+            
+            // Change menu icon
+            menuToggle.textContent = mainNav.classList.contains('show') ? '×' : '☰';
+        });
+
+        // Close menu when clicking a link
+        const navLinks = document.querySelectorAll('.main-nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('show');
+                menuToggle.classList.remove('active');
+                body.classList.remove('menu-open');
+                menuToggle.textContent = '☰';
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+                mainNav.classList.remove('show');
+                menuToggle.classList.remove('active');
+                body.classList.remove('menu-open');
+                menuToggle.textContent = '☰';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileTrigger = document.querySelector('.profile-trigger');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            profileTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show-dropdown');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('show-dropdown');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

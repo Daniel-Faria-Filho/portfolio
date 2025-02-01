@@ -1,0 +1,98 @@
+<%- include('partials/header') %>
+
+<div class="projects-manage">
+    <div id="pin-modal" class="modal">
+        <div class="modal-content">
+            <h3>Enter PIN</h3>
+            <input type="password" id="pin-input" maxlength="4" placeholder="Enter PIN">
+            <button onclick="verifyPin()">Submit</button>
+        </div>
+    </div>
+
+    <div id="project-form" class="project-form" style="display: none;">
+        <h2>Add New Project</h2>
+        <form action="/add-project" method="POST">
+            <div class="form-group">
+                <label for="title">Project Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Project Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <button type="submit" class="submit-button">Add Project</button>
+        </form>
+    </div>
+</div>
+
+<script>
+async function verifyPin() {
+    const pin = document.getElementById('pin-input').value;
+    const response = await fetch('/verify-pin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pin })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+        document.getElementById('pin-modal').style.display = 'none';
+        document.getElementById('project-form').style.display = 'block';
+    } else {
+        alert('Incorrect PIN');
+    }
+}
+
+// Show modal when pressing Ctrl + Shift + P
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+        document.getElementById('pin-modal').style.display = 'flex';
+    }
+});
+</script>
+
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.project-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+}
+
+#pin-input {
+    font-size: 1.5rem;
+    width: 120px;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+}
+</style>
+
+<%- include('partials/footer') %> 

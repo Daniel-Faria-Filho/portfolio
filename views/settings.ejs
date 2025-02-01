@@ -1,0 +1,85 @@
+<%- include('partials/header') %>
+
+<div class="settings-container">
+    <h1>Account Settings</h1>
+
+    <div class="settings-grid">
+        <!-- Password Change Section -->
+        <div class="settings-card">
+            <h2><i class="fas fa-lock"></i> Change Password</h2>
+            <form id="password-form" class="settings-form">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Update Password</button>
+            </form>
+        </div>
+
+        <!-- Account Management -->
+        <div class="settings-card danger-zone">
+            <h2><i class="fas fa-exclamation-triangle"></i> Account Management</h2>
+            <p>Warning: These actions cannot be undone.</p>
+            <button class="btn-danger" onclick="confirmDeactivate()">Deactivate Account</button>
+            <button class="btn-danger" onclick="confirmDelete()">Delete Account</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDeactivate() {
+    if (confirm('Are you sure you want to deactivate your account? You can reactivate it later.')) {
+        // Handle deactivation
+    }
+}
+
+function confirmDelete() {
+    if (confirm('Are you sure you want to permanently delete your account? This cannot be undone!')) {
+        // Handle deletion
+    }
+}
+
+document.getElementById('password-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        alert('New passwords do not match');
+        return;
+    }
+
+    try {
+        const response = await fetch('/settings/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Password updated successfully');
+            document.getElementById('password-form').reset();
+        } else {
+            alert(data.error || 'Error updating password');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating password');
+    }
+});
+</script>
+
+<%- include('partials/footer') %> 

@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+<section class="contact">
+    <h2>Get in Touch</h2>
+    
+    <% if (locals.success) { %>
+        <div class="message success">
+            Message sent successfully! I'll get back to you soon.
+        </div>
+    <% } %>
+    
+    <% if (locals.error) { %>
+        <div class="message error">
+            Sorry, there was an error sending your message. Please try again or use direct contact methods.
+        </div>
+    <% } %>
+
+    <div class="contact-container">
+        <div class="contact-info-section">
+            <h3>Direct Contact</h3>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <span class="icon">💬</span>
+                    <div class="contact-text">
+                        <p>Discord: <span class="discord-username">daniel_faria</span></p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <span class="icon">📧</span>
+                    <div class="contact-text">
+                        <p>Email: <a href="mailto:inquiries@danielfaria.cc">inquiries@danielfaria.cc</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <span class="icon">📱</span>
+                    <div class="contact-text">
+                        <p>Phone: <a href="tel:774-418-5858">+1 (774) 418-5858</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form class="contact-form" action="/send-email" method="POST">
+            <h3>Send Me a Message</h3>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" required placeholder="Message subject">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" required placeholder="Your message"></textarea>
+            </div>
+            
+            <button type="submit" class="submit-button">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<%- include('partials/footer') %> 

@@ -1,0 +1,154 @@
+<%- include('partials/header') %>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-picture-container">
+            <% if (user.profilePicture) { %>
+                <img src="<%= user.profilePicture %>" alt="Profile" class="profile-picture">
+            <% } else { %>
+                <div class="profile-initials">
+                    <%= user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2) %>
+                </div>
+            <% } %>
+            <input type="file" id="profile-picture-input" hidden accept="image/*">
+        </div>
+        
+        <div class="profile-picture-actions">
+            <label for="profile-picture-input" class="edit-picture">
+                <i class="fas fa-camera"></i>
+                <%= user.profilePicture ? 'Change' : 'Add' %>
+            </label>
+            <% if (user.profilePicture) { %>
+                <button onclick="resetProfilePicture()" class="reset-picture">
+                    <i class="fas fa-undo"></i>
+                    Reset
+                </button>
+            <% } %>
+        </div>
+        
+        <div class="profile-info">
+            <h1><%= user.name %></h1>
+            <p><%= user.email %></p>
+            <% if (user.bio) { %>
+                <p class="bio"><%= user.bio %></p>
+            <% } %>
+            <button class="edit-button" onclick="toggleEditMode()">Edit Profile</button>
+        </div>
+    </div>
+
+    <form id="profile-form" class="profile-form" style="display: none;">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="<%= user.name %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" maxlength="500"><%= user.bio || '' %></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" value="<%= user.location || '' %>">
+        </div>
+        
+        <div class="form-group">
+            <label for="website">Website</label>
+            <input type="url" id="website" name="website" value="<%= user.website || '' %>">
+        </div>
+        
+        <div class="button-group">
+            <button type="submit" class="save-button">Save Changes</button>
+            <button type="button" class="cancel-button" onclick="toggleEditMode()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleEditMode() {
+    const form = document.getElementById('profile-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Handle profile picture upload
+document.getElementById('profile-picture-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Image size must be less than 2MB');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    
+    try {
+        const response = await fetch('/profile/update-picture', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Error updating profile picture');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating profile picture');
+    }
+});
+
+// Handle form submission
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    try {
+        const response = await fetch('/profile/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Error updating profile');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating profile');
+    }
+});
+
+async function resetProfilePicture() {
+    if (!confirm('Are you sure you want to reset your profile picture?')) return;
+    
+    try {
+        const response = await fetch('/profile/reset-picture', {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert('Error resetting profile picture');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error resetting profile picture');
+    }
+}
+</script>
+
+<%- include('partials/footer') %> 

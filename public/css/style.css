@@ -1,0 +1,1633 @@
+:root {
+    --dark-bg: #1a1a1a;
+    --darker-bg: #242424;
+    --accent: #3498db;
+    --accent-hover: #2980b9;
+    --text: #ffffff;
+    --text-secondary: #e0e0e0;
+    --card-bg: #2d2d2d;
+    --gradient: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* viewport height */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--darker-bg);
+    padding: 2rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    max-width: 1700px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.logo-section:hover {
+    opacity: 0.8;
+}
+
+.main-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.main-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 2rem;  /* This gap is for main nav items */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.main-nav a:hover {
+    color: var(--accent);
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto;
+}
+
+.avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    background: var(--gradient);
+    padding: 2px;
+    transition: transform 0.3s ease;
+}
+
+.avatar img:hover {
+    transform: scale(1.05);
+}
+
+main {
+    flex: 1 0 auto; /* This makes main content take up available space */
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    width: 100%;
+}
+
+.hero {
+    text-align: center;
+    padding: 6rem 0;
+    background: radial-gradient(circle at center, rgb(64 13 13 / 10%) 0%, transparent 70%);
+    border-radius: 20px;
+    margin-bottom: 4rem;
+}
+
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.intro {
+    text-align: center;
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+.aviation-photos {
+    display: flex;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.aviation-photos img {
+    max-width: 30%;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+.aviation-photos img:hover {
+    transform: translateY(-5px);
+}
+
+.about {
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    margin: 3rem 0;
+}
+
+.about h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--accent);
+}
+
+.bio {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.project-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.project-card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+.project-card h3 {
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+footer {
+    flex-shrink: 0; /* Prevents footer from shrinking */
+    background-color: var(--darker-bg);
+    text-align: center;
+    padding: 2rem;
+    margin-top: auto; /* Pushes footer to bottom */
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.contact-info {
+    margin: 1rem 0;
+}
+
+.contact-info a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.contact-info a:hover {
+    background: var(--accent);
+    color: var(--text);
+}
+
+.social-links {
+    margin-top: 1rem;
+}
+
+.discord-username {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* Add smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Add responsive design improvements */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    .aviation-photos {
+        flex-direction: column;
+    }
+    
+    .aviation-photos img {
+        max-width: 100%;
+    }
+    
+    nav ul {
+        gap: 1rem;
+    }
+    
+    nav a {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+} 
+
+/* Add these to your existing CSS */
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-right: auto;
+}
+
+.name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: 'Inter', monospace;
+}
+
+.name:hover {
+    color: var(--text);
+    transition: color 0.3s ease;
+}
+
+.intro-links {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.intro-links a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.intro-links a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.cta-button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.cta-button:first-child {
+    background: var(--gradient);
+    color: var(--text);
+}
+
+.cta-button:last-child {
+    border: 2px solid var(--accent);
+    color: var(--accent);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+/* Contact page styles */
+.contact {
+    padding: 2rem 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contact h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--accent);
+    font-size: 2rem;
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+}
+
+.contact-info-section {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.contact-info-section h3 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+}
+
+.contact-item .icon {
+    font-size: 1.5rem;
+}
+
+.contact-item a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: var(--text);
+    text-decoration: underline;
+}
+
+/* Add success/error messages */
+.message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.success {
+    background: rgba(39, 174, 96, 0.2);
+    border: 1px solid #27ae60;
+    color: #2ecc71;
+}
+
+.error {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+}
+
+/* Contact form styles */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-form h3 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.submit-button {
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient);
+    color: var(--text);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+} 
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    /* Header adjustments */
+    header {
+        padding: 1rem;
+    }
+
+    .header-content {
+        position: relative;
+    }
+
+    .main-nav {
+        display: none;
+        position: fixed;
+        top: 70px; /* Adjust based on your header height */
+        left: 0;
+        right: 0;
+        background: var(--darker-bg);
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transform: none;
+    }
+
+    .main-nav.show {
+        display: block;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .main-nav li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .main-nav li:last-child {
+        border-bottom: none;
+    }
+
+    .main-nav a {
+        display: block;
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .hamburger {
+        display: flex;
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px;
+        margin-left: auto;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-section {
+        min-width: auto;
+    }
+
+    .name {
+        font-size: 1rem;
+    }
+
+    .avatar img {
+        width: 45px;
+        height: 45px;
+    }
+
+    /* Contact page mobile optimization */
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .contact-info-section {
+        padding: 1rem;
+    }
+
+    /* Project grid mobile optimization */
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Hero section mobile optimization */
+    .hero {
+        padding: 3rem 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+    }
+
+    /* Intro section mobile optimization */
+    .intro {
+        padding: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .intro-links {
+        text-align: center;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .cta-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* About section mobile optimization */
+    .about {
+        padding: 1.5rem;
+    }
+
+    .bio {
+        font-size: 1rem;
+    }
+
+    /* Form mobile optimization */
+    .form-group input,
+    .form-group textarea {
+        font-size: 16px;
+    }
+
+    /* Footer mobile optimization */
+    footer {
+        padding: 1.5rem 1rem;
+    }
+
+    .contact-info p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Add hamburger menu button */
+.hamburger {
+    display: none;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--darker-bg);
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-nav.show {
+        display: block;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-nav li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .main-nav li:last-child {
+        border-bottom: none;
+    }
+
+    .main-nav a {
+        display: block;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .header-content {
+        position: relative;
+    }
+}
+
+/* Mobile styles for contact page */
+@media (max-width: 768px) {
+    .contact {
+        padding: 1rem;
+    }
+
+    .contact h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .contact-info-section {
+        padding: 1rem;
+    }
+
+    .contact-info-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .contact-item {
+        padding: 0.8rem;
+        margin: 0.8rem 0;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .contact-item .icon {
+        font-size: 1.2rem;
+        min-width: 24px;
+    }
+
+    .contact-item p {
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+
+    .contact-form {
+        gap: 1rem;
+    }
+
+    .contact-form h3 {
+        font-size: 1.2rem;
+    }
+
+    .form-group {
+        gap: 0.3rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.7rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+    }
+
+    .submit-button {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    /* Improve touch targets */
+    .contact-item a {
+        padding: 0.5rem 0;
+        display: inline-block;
+    }
+
+    /* Better spacing for stacked layout */
+    .contact-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 768px) {
+    .main-nav {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(20, 20, 20, 0.98);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        padding-top: 5rem;
+    }
+
+    .main-nav.show {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%;
+        text-align: center;
+        padding: 0;
+    }
+
+    .main-nav li {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideIn 0.5s ease forwards;
+    }
+
+    @keyframes slideIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .main-nav.show li:nth-child(1) { animation-delay: 0.1s; }
+    .main-nav.show li:nth-child(2) { animation-delay: 0.2s; }
+    .main-nav.show li:nth-child(3) { animation-delay: 0.3s; }
+    .main-nav.show li:nth-child(4) { animation-delay: 0.4s; }
+
+    .main-nav a {
+        font-size: 1.5rem;
+        padding: 1rem;
+        display: block;
+    }
+
+    .menu-toggle {
+        display: block;
+        position: relative;
+        z-index: 2000;
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    /* Remove any conflicting styles */
+    .header-content {
+        justify-content: space-between;
+    }
+
+    .logo-section {
+        flex: 0 1 auto;
+    }
+}
+
+/* Update or add these styles */
+.projects h2 {
+    font-size: 2.5rem;
+    color: var(--accent);
+    margin-bottom: 3rem;  /* Increased from default */
+    text-align: center;
+}
+
+.project-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;  /* Added extra top margin */
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Optional: Add some animation to the heading */
+.projects h2 {
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.projects h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--gradient);
+    border-radius: 2px;
+}
+
+/* Add these styles at the end of your existing CSS file */
+
+.services {
+    padding: 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.services h1 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.services .subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+}
+
+.services-category {
+    margin-bottom: 4rem;
+}
+
+.services-category h2 {
+    color: var(--accent);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.services-category h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--gradient);
+    border-radius: 2px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.service-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.service-card h3 {
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.service-card .price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.service-card .features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.service-card .features li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.service-card .features li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+.service-card .additional-info {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.cta-section {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 15px;
+}
+
+.cta-section h3 {
+    color: var(--accent);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card {
+        padding: 1.5rem;
+    }
+
+    .service-card .price {
+        font-size: 1.5rem;
+    }
+
+    .cta-section {
+        padding: 2rem 1rem;
+    }
+}
+
+/* Add these to your existing CSS */
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 2rem;
+}
+
+.auth-box {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.billing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.subscription-card, .invoice-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+#card-element {
+    padding: 1rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.auth-button {
+    background: var(--gradient);
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 25px;
+    color: white !important;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+    margin-left: 1rem;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Profile picture in dropdown */
+.profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.initials-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+}
+
+.user-name {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.dropdown-arrow {
+    color: var(--text-secondary);
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.profile-dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 0;
+    margin-top: 0.5rem;
+    min-width: 160px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem !important;  /* Specific gap for dropdown items */
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.dropdown-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+.show-dropdown {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+/* Make logout button special */
+.logout-btn {
+    color: #ff4757 !important;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 71, 87, 0.1) !important;
+}
+
+.logout-btn i {
+    color: #ff4757;
+}
+
+/* Profile Page */
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+}
+
+.profile-picture-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    background: var(--card-bg);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--accent);
+}
+
+.profile-picture,
+.profile-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-picture {
+    object-fit: cover;
+    object-position: center;
+}
+
+.profile-initials {
+    background: var(--gradient);
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.profile-picture-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-picture-actions button,
+.profile-picture-actions label {
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    flex: 1;
+    justify-content: center;
+}
+
+.profile-picture-actions .edit-picture {
+    background: var(--gradient);
+    color: white;
+}
+
+.profile-picture-actions .reset-picture {
+    background: #ff4757;
+    color: white;
+}
+
+.profile-picture-actions button:hover,
+.profile-picture-actions label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.edit-button {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.edit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.settings-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+}
+
+.btn-primary {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+.btn-danger {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.btn-danger:hover {
+    background: #ff6b81;
+    transform: translateY(-2px);
+}
+
+.danger-zone {
+    border-color: #ff4757;
+}
+
+.danger-zone h2 {
+    color: #ff4757;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.profile-info {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.profile-info h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+}
+
+.profile-info p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.profile-form {
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.profile-form input,
+.profile-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.profile-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Profile Form Buttons */
+.profile-form button {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    margin-right: 1rem;
+    min-width: 120px;
+}
+
+.profile-form .cancel-button {
+    background: #ff4757;
+}
+
+.profile-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+.profile-form .cancel-button:hover {
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2);
+}
+
+.profile-form .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+}
+
+.profile-form .save-button {
+    background: var(--gradient);
+}
+
+.profile-form .save-button:hover {
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-picture-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-initials {
+        font-size: 2.5rem;
+    }
+
+    .profile-form {
+        padding: 1rem;
+    }
+}
+
+/* Auth pages buttons */
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.register-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.register-link:hover {
+    background: rgba(52, 152, 219, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Billing Management Styles */
+.invoices-list {
+    margin-top: 1rem;
+}
+
+.invoice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.invoice-details {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.invoice-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.invoice-amount {
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.invoice-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+.invoice-status.paid {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.invoice-status.pending {
+    background: rgba(255, 171, 0, 0.2);
+    color: #ffab00;
+}
+
+.view-invoice {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.view-invoice:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
