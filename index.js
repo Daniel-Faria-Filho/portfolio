@@ -13,6 +13,7 @@ const Invoice = require('./models/Invoice');
 const jwt = require('jsonwebtoken');
 const fileUpload = require('express-fileupload');
 const bcrypt = require('bcryptjs');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 9002;
 
@@ -229,7 +230,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/billing', require('./routes/billing'));
 
 // Stripe webhook handler
-app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 

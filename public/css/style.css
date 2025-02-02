@@ -1631,3 +1631,72 @@ html {
 .view-invoice:hover {
     background: rgba(52, 152, 219, 0.1);
 }
+
+/* Recent Invoices Styles */
+.recent-invoices {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+}
+
+.invoices-list {
+    margin-top: 1rem;
+}
+
+.invoice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--darker-bg);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.invoice-details {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.invoice-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.invoice-amount {
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.invoice-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+.invoice-status.paid {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.invoice-status.pending {
+    background: rgba(255, 171, 0, 0.2);
+    color: #ffab00;
+}
+
+.view-invoice {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.view-invoice:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
