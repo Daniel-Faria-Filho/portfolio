@@ -18,6 +18,7 @@ const app = express();
 const port = 9002;
 
 const auth = require('./middleware/auth'); // Fix the path to middleware
+const billingRouter = require('./routes/billing');
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -227,7 +228,7 @@ mongoose.connect(config.MONGODB_URI, {
 
 // Add authentication routes
 app.use('/auth', require('./routes/auth'));
-app.use('/billing', require('./routes/billing'));
+app.use('/billing', billingRouter);
 
 // Stripe webhook handler
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {

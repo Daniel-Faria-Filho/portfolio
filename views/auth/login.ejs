@@ -12,10 +12,10 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn-primary">Login</button>
+            <button type="submit" class="auth-button">Login</button>
             <div class="auth-links">
                 <span>Don't have an account?</span>
-                <a href="/auth/register" class="register-link">Register</a>
+                <a href="/auth/register" class="auth-link">Register</a>
             </div>
         </form>
     </div>
@@ -38,12 +38,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         });
         const data = await response.json();
         if (data.error) {
-            alert(data.error);
+            Toast.error(data.error);
         } else {
+            // Just redirect without success toast
             window.location.href = '/billing-management';
         }
     } catch (error) {
-        alert('Error logging in');
+        Toast.error('Error logging in');
     }
 });
 </script>

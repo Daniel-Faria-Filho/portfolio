@@ -1,73 +1,107 @@
 <%- include('partials/header') %>
 
 <div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-picture-container">
-            <% if (user.profilePicture) { %>
-                <img src="<%= user.profilePicture %>" alt="Profile" class="profile-picture">
-            <% } else { %>
-                <div class="profile-initials">
-                    <%= user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2) %>
+    <!-- Profile Header Section -->
+    <div class="profile-header-section">
+        <div class="profile-cover">
+            <div class="profile-picture-wrapper">
+                <div class="profile-picture-container">
+                    <% if (user.getAvatar()) { %>
+                        <img src="<%= user.getAvatar() %>" alt="Profile" class="profile-picture">
+                    <% } else { %>
+                        <div class="profile-initials">
+                            <%= user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2) %>
+                        </div>
+                    <% } %>
                 </div>
-            <% } %>
-            <input type="file" id="profile-picture-input" hidden accept="image/*">
-        </div>
-        
-        <div class="profile-picture-actions">
-            <label for="profile-picture-input" class="edit-picture">
-                <i class="fas fa-camera"></i>
-                <%= user.profilePicture ? 'Change' : 'Add' %>
-            </label>
-            <% if (user.profilePicture) { %>
-                <button onclick="resetProfilePicture()" class="reset-picture">
-                    <i class="fas fa-undo"></i>
-                    Reset
-                </button>
-            <% } %>
+                <div class="profile-picture-actions">
+                    <label for="profile-picture-input" class="action-button primary">
+                        <i class="fas fa-camera"></i>
+                        <%= user.profilePicture ? 'Change Photo' : 'Add Photo' %>
+                    </label>
+                    <% if (user.profilePicture) { %>
+                        <button onclick="resetProfilePicture()" class="action-button danger">
+                            <i class="fas fa-undo"></i>
+                            Reset
+                        </button>
+                    <% } %>
+                </div>
+            </div>
         </div>
         
         <div class="profile-info">
             <h1><%= user.name %></h1>
-            <p><%= user.email %></p>
-            <% if (user.bio) { %>
-                <p class="bio"><%= user.bio %></p>
-            <% } %>
-            <button class="edit-button" onclick="toggleEditMode()">Edit Profile</button>
+            <p class="profile-email"><%= user.email %></p>
         </div>
     </div>
 
-    <form id="profile-form" class="profile-form" style="display: none;">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" value="<%= user.name %>" required>
+    <!-- Profile Content Section -->
+    <div class="profile-content">
+        <div class="profile-card">
+            <div class="card-header">
+                <h2><i class="fas fa-user"></i> Profile Information</h2>
+                <button class="edit-button" onclick="toggleEditMode()">
+                    <i class="fas fa-edit"></i>
+                    Edit Profile
+                </button>
+            </div>
+
+            <!-- View Mode -->
+            <div id="profile-view" class="profile-details">
+                <div class="detail-group">
+                    <label>Full Name</label>
+                    <p><%= user.name %></p>
+                </div>
+                <div class="detail-group">
+                    <label>Email</label>
+                    <p><%= user.email %></p>
+                </div>
+                <div class="detail-group">
+                    <label>Bio</label>
+                    <p><%= user.bio || 'No bio added yet' %></p>
+                </div>
+                <div class="detail-group">
+                    <label>Location</label>
+                    <p><%= user.location || 'Not specified' %></p>
+                </div>
+                <div class="detail-group">
+                    <label>Website</label>
+                    <p><%= user.website || 'Not specified' %></p>
+                </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <form id="profile-form" class="profile-form" style="display: none;">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" value="<%= user.name %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" name="bio" maxlength="500"><%= user.bio || '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" value="<%= user.location || '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" name="website" value="<%= user.website || '' %>">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Save Changes</button>
+                    <button type="button" class="cancel-button" onclick="toggleEditMode()">Cancel</button>
+                </div>
+            </form>
         </div>
-        
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="<%= user.email %>" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="bio">Bio</label>
-            <textarea id="bio" name="bio" maxlength="500"><%= user.bio || '' %></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="location">Location</label>
-            <input type="text" id="location" name="location" value="<%= user.location || '' %>">
-        </div>
-        
-        <div class="form-group">
-            <label for="website">Website</label>
-            <input type="url" id="website" name="website" value="<%= user.website || '' %>">
-        </div>
-        
-        <div class="button-group">
-            <button type="submit" class="save-button">Save Changes</button>
-            <button type="button" class="cancel-button" onclick="toggleEditMode()">Cancel</button>
-        </div>
-    </form>
+    </div>
 </div>
+
+<input type="file" id="profile-picture-input" hidden accept="image/*">
 
 <script>
 function toggleEditMode() {
@@ -75,14 +109,65 @@ function toggleEditMode() {
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
-// Handle profile picture upload
+// Add this function at the top of your script section
+async function getAverageColor(imgEl) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.src = imgEl.src;
+        
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0);
+            
+            const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+            let r = 0, g = 0, b = 0;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+            }
+            
+            r = Math.floor(r / (data.length / 4));
+            g = Math.floor(g / (data.length / 4));
+            b = Math.floor(b / (data.length / 4));
+            
+            resolve(`rgb(${r}, ${g}, ${b})`);
+        };
+    });
+}
+
+// Add this function to apply the color
+async function applyProfilePictureColor() {
+    const profilePic = document.querySelector('.profile-picture');
+    if (profilePic) {
+        const color = await getAverageColor(profilePic);
+        const container = document.querySelector('.profile-picture-container');
+        container.style.borderColor = color;
+        
+        // Create a gradient with the dominant color
+        const cover = document.querySelector('.profile-cover');
+        cover.style.background = `linear-gradient(135deg, ${color}, var(--accent))`;
+    }
+}
+
+// Call this after page load
+document.addEventListener('DOMContentLoaded', () => {
+    applyProfilePictureColor();
+});
+
+// Update your profile picture upload handler
 document.getElementById('profile-picture-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Check file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-        alert('Image size must be less than 2MB');
+        Toast.error('Image size must be less than 2MB');
         return;
     }
     
@@ -96,13 +181,28 @@ document.getElementById('profile-picture-input').addEventListener('change', asyn
         });
         
         if (response.ok) {
-            window.location.reload();
+            // Create a preview before reload
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const profilePic = document.querySelector('.profile-picture') || new Image();
+                profilePic.src = e.target.result;
+                profilePic.classList.add('profile-picture');
+                
+                const container = document.querySelector('.profile-picture-container');
+                container.innerHTML = '';
+                container.appendChild(profilePic);
+                
+                await applyProfilePictureColor();
+                setTimeout(() => window.location.reload(), 500);
+            };
+            reader.readAsDataURL(file);
         } else {
-            alert('Error updating profile picture');
+            const data = await response.json();
+            Toast.error(data.error || 'Error updating profile picture');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error updating profile picture');
+        Toast.error('Error connecting to server');
     }
 });
 
@@ -142,11 +242,12 @@ async function resetProfilePicture() {
         if (response.ok) {
             window.location.reload();
         } else {
-            alert('Error resetting profile picture');
+            const data = await response.json();
+            Toast.error(data.error || 'Error resetting profile picture');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error resetting profile picture');
+        Toast.error('Error connecting to server');
     }
 }
 </script>

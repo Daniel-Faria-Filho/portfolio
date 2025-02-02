@@ -1,57 +1,28 @@
 <%- include('partials/header') %>
 
-<div class="projects-manage">
-    <div id="pin-modal" class="modal">
-        <div class="modal-content">
-            <h3>Enter PIN</h3>
-            <input type="password" id="pin-input" maxlength="4" placeholder="Enter PIN">
-            <button onclick="verifyPin()">Submit</button>
+<% if (user && user.email === 'inbox@danielfaria.cc') { %>
+    <div class="projects-manage">
+        <div id="project-form" class="project-form">
+            <h2>Add New Project</h2>
+            <form action="/add-project" method="POST">
+                <div class="form-group">
+                    <label for="title">Project Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Project Description</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Add Project</button>
+            </form>
         </div>
     </div>
-
-    <div id="project-form" class="project-form" style="display: none;">
-        <h2>Add New Project</h2>
-        <form action="/add-project" method="POST">
-            <div class="form-group">
-                <label for="title">Project Title</label>
-                <input type="text" id="title" name="title" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Project Description</label>
-                <textarea id="description" name="description" required></textarea>
-            </div>
-            <button type="submit" class="submit-button">Add Project</button>
-        </form>
+<% } else { %>
+    <div class="unauthorized-message">
+        <h2>Unauthorized Access</h2>
+        <p>You don't have permission to manage projects.</p>
     </div>
-</div>
-
-<script>
-async function verifyPin() {
-    const pin = document.getElementById('pin-input').value;
-    const response = await fetch('/verify-pin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pin })
-    });
-    
-    const data = await response.json();
-    if (data.success) {
-        document.getElementById('pin-modal').style.display = 'none';
-        document.getElementById('project-form').style.display = 'block';
-    } else {
-        alert('Incorrect PIN');
-    }
-}
-
-// Show modal when pressing Ctrl + Shift + P
-document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.shiftKey && e.key === 'P') {
-        document.getElementById('pin-modal').style.display = 'flex';
-    }
-});
-</script>
+<% } %>
 
 <style>
 .modal {

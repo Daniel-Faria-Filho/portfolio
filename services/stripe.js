@@ -39,6 +39,34 @@ class StripeService {
     static async sendInvoice(invoiceId) {
         return await stripe.invoices.sendInvoice(invoiceId);
     }
+
+    static async createCheckoutSession(items, customerId, successUrl, cancelUrl) {
+        return await stripe.checkout.sessions.create({
+            customer: customerId,
+            payment_method_types: ['card'],
+            line_items: items.map(item => ({
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: item.name,
+                        description: item.description,
+                    },
+                    unit_amount: item.amount * 100, // Convert to cents
+                },
+                quantity: 1,
+            })),
+            mode: 'payment',
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+        });
+    }
+
+    static async getInvoices(customerId) {
+        const invoices = await stripe.invoices.list({
+            customer: customerId,
+        });
+        return invoices.data;
+    }
 }
 
 module.exports = StripeService; 

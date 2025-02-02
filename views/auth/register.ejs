@@ -16,9 +16,12 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Register</button>
+            <button type="submit" class="auth-button">Register</button>
+            <div class="auth-links">
+                <span>Already have an account?</span>
+                <a href="/auth/login" class="auth-link">Login</a>
+            </div>
         </form>
-        <p>Already have an account? <a href="/auth/login">Login</a></p>
     </div>
 </div>
 
@@ -40,12 +43,15 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
         const data = await response.json();
         if (data.error) {
-            alert(data.error);
+            Toast.error(data.error);
         } else {
-            window.location.href = '/billing-management';
+            Toast.success('Registration successful! Redirecting...');
+            setTimeout(() => {
+                window.location.href = '/billing-management';
+            }, 1500);
         }
     } catch (error) {
-        alert('Error registering account');
+        Toast.error('Error registering account');
     }
 });
 </script>

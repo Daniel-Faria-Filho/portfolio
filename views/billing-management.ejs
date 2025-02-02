@@ -4,61 +4,70 @@
     <h1>Billing Management</h1>
     
     <div class="subscription-card">
-        <h2>Your Subscriptions</h2>
-        <% if (user.subscriptions && user.subscriptions.length > 0) { %>
-            <% user.subscriptions.forEach(subscription => { %>
-                <div class="subscription-item">
-                    <h3><%= subscription.name %></h3>
-                    <p>Status: <%= subscription.status %></p>
-                </div>
-            <% }) %>
-        <% } else { %>
-            <p>No active subscriptions</p>
-        <% } %>
-    </div>
-
-    <div class="recent-invoices">
-        <h2>Recent Invoices</h2>
-        <% if (invoices && invoices.length > 0) { %>
-            <div class="invoices-list">
-                <% invoices.forEach(invoice => { %>
-                    <div class="invoice-item">
-                        <div class="invoice-details">
-                            <span class="invoice-date">
-                                <%= new Date(invoice.createdAt).toLocaleDateString() %>
-                            </span>
-                            <span class="invoice-amount">
-                                $<%= (invoice.amount / 100).toFixed(2) %>
-                            </span>
-                            <span class="invoice-status <%= invoice.status %>">
-                                <%= invoice.status %>
-                            </span>
-                        </div>
-                        <a href="/invoice/<%= invoice._id %>" class="view-invoice">
-                            View Invoice
-                        </a>
-                    </div>
-                <% }); %>
+        <h2>Your Invoices</h2>
+        <div class="invoices-list">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
             </div>
-        <% } else { %>
-            <p>No invoices yet</p>
-        <% } %>
-    </div>
-
-    <div class="payment-method-section">
-        <h3>Payment Methods</h3>
-        <div id="card-element"></div>
-        <button id="save-card-button">Save Card</button>
+        </div>
     </div>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
-<script src="/js/billing.js"></script>
 <script>
-    const stripe = Stripe('<%- stripePublicKey %>');
-    const elements = stripe.elements();
-    const card = elements.create('card');
-    card.mount('#card-element');
+async function fetchAndDisplayInvoices() {
+    const invoicesList = document.querySelector('.invoices-list');
+    if (!invoicesList) {
+        console.error('Could not find invoices-list element');
+        return;
+    }
+
+    try {
+        const response = await fetch('/billing/get-invoices');
+        const invoices = await response.json();
+        
+        // Filter out draft and void invoices
+        const validInvoices = invoices.filter(invoice => 
+            invoice.status !== 'draft' && invoice.status !== 'void'
+        );
+
+        if (validInvoices.length === 0) {
+            invoicesList.innerHTML = '<p class="no-invoices">No invoices yet</p>';
+            return;
+        }
+
+        invoicesList.innerHTML = validInvoices.map(invoice => `
+            <div class="invoice-item">
+                <div class="invoice-details">
+                    <div class="invoice-dates">
+                        ${invoice.due_date ? `
+                            <span class="invoice-due-date">
+                                Due: ${new Date(invoice.due_date * 1000).toLocaleDateString()}
+                            </span>
+                        ` : ''}
+                    </div>
+                    <span class="invoice-amount">
+                        $${(invoice.amount_due / 100).toFixed(2)}
+                    </span>
+                    <span class="invoice-status ${invoice.status}">
+                        ${invoice.status}
+                    </span>
+                </div>
+                ${invoice.status === 'open' ? `
+                    <a href="${invoice.hosted_invoice_url}" target="_blank" class="pay-button no-underline">
+                        Pay Invoice
+                    </a>
+                ` : ''}
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        Toast.error('Error fetching invoices');
+        invoicesList.innerHTML = '<p class="error-message">Error loading invoices</p>';
+    }
+}
+
+// Fetch invoices when page loads
+document.addEventListener('DOMContentLoaded', fetchAndDisplayInvoices);
 </script>
 
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
