@@ -1965,3 +1965,22 @@ html {
         font-size: 0.9rem;
     }
 }
+
+.success-message {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(46, 213, 115, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.success-message i {
+    color: #2ed573;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.success-message p {
+    color: var(--text);
+    margin: 0.5rem 0;
+}

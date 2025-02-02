@@ -19,6 +19,7 @@ const port = 9002;
 
 const auth = require('./middleware/auth'); // Fix the path to middleware
 const billingRouter = require('./routes/billing');
+const { verifyEmailSetup } = require('./utils/email');
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -98,12 +99,21 @@ app.get('/services', (req, res) => {
     });
 });
 
+app.get('/auth/forgot-password', (req, res) => {
+    res.render('auth/forgot-password');
+});
+
+app.get('/auth/reset-password', (req, res) => {
+    res.render('auth/reset-password');
+});
+
 // Handle contact form submission
 app.post('/send-email', async (req, res) => {
+
     try {
         const mailOptions = {
             from: req.body.email,
-            to: 'gdifaria1987@gmail.com',
+            to: 'inbox@danielfaria.cc',
             subject: `Portfolio Contact: ${req.body.subject}`,
             text: `Name: ${req.body.name}\nEmail: ${req.body.email}\n\nMessage:\n${req.body.message}`
         };
@@ -217,6 +227,13 @@ mongoose.connect(config.MONGODB_URI, {
 .then(() => {
     console.log('Connected to MongoDB');
     console.log('Database connection established');
+    verifyEmailSetup()
+        .then(() => {
+            console.log('Email service ready');
+        })
+        .catch(error => {
+            console.error('Email service setup failed:', error);
+        });
 })
 .catch(err => {
     console.error('MongoDB connection error:', err);

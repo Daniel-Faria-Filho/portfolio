@@ -6,6 +6,8 @@ const User = require('../models/User');
 const StripeService = require('../services/stripe');
 const config = require('../config/config');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
+const { sendPasswordResetEmail } = require('../utils/email');
+const crypto = require('crypto');
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
@@ -76,6 +78,80 @@ router.post('/login', async (req, res) => {
         res.json({ user: { email: user.email, name: user.name } });
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+});
+
+// POST route for forgot password
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: 'No account with that email exists' });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+
+        // Save token to user
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = resetTokenExpiry;
+        await user.save();
+
+        // Send reset email
+        await sendPasswordResetEmail(email, resetToken);
+
+        res.json({ message: 'Password reset email sent' });
+    } catch (error) {
+        console.error('Password reset error:', error);
+        res.status(500).json({ error: 'Error processing your request' });
+    }
+});
+
+// GET route for reset password page
+router.get('/reset-password/:token', async (req, res) => {
+    try {
+        const user = await User.findOne({
+            resetPasswordToken: req.params.token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.redirect('/auth/forgot-password?error=invalid');
+        }
+
+        res.render('auth/reset-password', { token: req.params.token });
+    } catch (error) {
+        res.redirect('/auth/forgot-password?error=error');
+    }
+});
+
+// POST route for reset password
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { password, token } = req.body;
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Password reset token is invalid or has expired' });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({ message: 'Password has been reset' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error resetting password' });
     }
 });
 
