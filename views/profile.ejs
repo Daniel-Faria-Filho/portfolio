@@ -6,26 +6,25 @@
         <div class="profile-cover">
             <div class="profile-picture-wrapper">
                 <div class="profile-picture-container">
-                    <% if (user.getAvatar()) { %>
-                        <img src="<%= user.getAvatar() %>" alt="Profile" class="profile-picture">
+                    <% if (user.profilePicture) { %>
+                        <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-picture">
                     <% } else { %>
                         <div class="profile-initials">
-                            <%= user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2) %>
+                            <%= user.name.charAt(0).toUpperCase() %>
                         </div>
                     <% } %>
                 </div>
                 <div class="profile-picture-actions">
-                    <label for="profile-picture-input" class="action-button primary">
+                    <button class="action-button primary" onclick="document.getElementById('profilePicture').click()">
                         <i class="fas fa-camera"></i>
-                        <%= user.profilePicture ? 'Change Photo' : 'Add Photo' %>
-                    </label>
-                    <% if (user.profilePicture) { %>
-                        <button onclick="resetProfilePicture()" class="action-button danger">
-                            <i class="fas fa-undo"></i>
-                            Reset
-                        </button>
-                    <% } %>
+                        Change Photo
+                    </button>
+                    <button class="action-button danger" onclick="resetProfilePicture()">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
                 </div>
+                <input type="file" id="profilePicture" accept="image/*" style="display: none;" onchange="updateProfilePicture(event)">
             </div>
         </div>
         
@@ -39,22 +38,19 @@
     <div class="profile-content">
         <div class="profile-card">
             <div class="card-header">
-                <h2><i class="fas fa-user"></i> Profile Information</h2>
-                <button class="edit-button" onclick="toggleEditMode()">
+                <h2>
+                    <i class="fas fa-user"></i>
+                    Profile Information
+                </h2>
+                <button class="edit-button" onclick="toggleEdit()">
                     <i class="fas fa-edit"></i>
-                    Edit Profile
+                    Edit
                 </button>
             </div>
-
-            <!-- View Mode -->
-            <div id="profile-view" class="profile-details">
+            <div class="profile-details" id="profileDetails">
                 <div class="detail-group">
-                    <label>Full Name</label>
+                    <label>Name</label>
                     <p><%= user.name %></p>
-                </div>
-                <div class="detail-group">
-                    <label>Email</label>
-                    <p><%= user.email %></p>
                 </div>
                 <div class="detail-group">
                     <label>Bio</label>
@@ -69,16 +65,10 @@
                     <p><%= user.website || 'Not specified' %></p>
                 </div>
             </div>
-
-            <!-- Edit Mode -->
-            <form id="profile-form" class="profile-form" style="display: none;">
+            <form id="editForm" style="display: none;">
                 <div class="form-group">
-                    <label for="name">Full Name</label>
+                    <label for="name">Name</label>
                     <input type="text" id="name" name="name" value="<%= user.name %>" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="<%= user.email %>" required>
                 </div>
                 <div class="form-group">
                     <label for="bio">Bio</label>
@@ -94,122 +84,32 @@
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="save-button">Save Changes</button>
-                    <button type="button" class="cancel-button" onclick="toggleEditMode()">Cancel</button>
+                    <button type="button" class="cancel-button" onclick="toggleEdit()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<input type="file" id="profile-picture-input" hidden accept="image/*">
-
 <script>
-function toggleEditMode() {
-    const form = document.getElementById('profile-form');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-}
+let isEditing = false;
 
-// Add this function at the top of your script section
-async function getAverageColor(imgEl) {
-    return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = imgEl.src;
-        
-        img.onload = () => {
-            canvas.width = img.width;
-            canvas.height = img.height;
-            context.drawImage(img, 0, 0);
-            
-            const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
-            let r = 0, g = 0, b = 0;
-            
-            for (let i = 0; i < data.length; i += 4) {
-                r += data[i];
-                g += data[i + 1];
-                b += data[i + 2];
-            }
-            
-            r = Math.floor(r / (data.length / 4));
-            g = Math.floor(g / (data.length / 4));
-            b = Math.floor(b / (data.length / 4));
-            
-            resolve(`rgb(${r}, ${g}, ${b})`);
-        };
-    });
-}
-
-// Add this function to apply the color
-async function applyProfilePictureColor() {
-    const profilePic = document.querySelector('.profile-picture');
-    if (profilePic) {
-        const color = await getAverageColor(profilePic);
-        const container = document.querySelector('.profile-picture-container');
-        container.style.borderColor = color;
-        
-        // Create a gradient with the dominant color
-        const cover = document.querySelector('.profile-cover');
-        cover.style.background = `linear-gradient(135deg, ${color}, var(--accent))`;
+function toggleEdit() {
+    const profileDetails = document.getElementById('profileDetails');
+    const editForm = document.getElementById('editForm');
+    isEditing = !isEditing;
+    
+    if (isEditing) {
+        profileDetails.style.display = 'none';
+        editForm.style.display = 'block';
+    } else {
+        profileDetails.style.display = 'block';
+        editForm.style.display = 'none';
     }
 }
 
-// Call this after page load
-document.addEventListener('DOMContentLoaded', () => {
-    applyProfilePictureColor();
-});
-
-// Update your profile picture upload handler
-document.getElementById('profile-picture-input').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    if (file.size > 2 * 1024 * 1024) {
-        Toast.error('Image size must be less than 2MB');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('profilePicture', file);
-    
-    try {
-        const response = await fetch('/profile/update-picture', {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (response.ok) {
-            // Create a preview before reload
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const profilePic = document.querySelector('.profile-picture') || new Image();
-                profilePic.src = e.target.result;
-                profilePic.classList.add('profile-picture');
-                
-                const container = document.querySelector('.profile-picture-container');
-                container.innerHTML = '';
-                container.appendChild(profilePic);
-                
-                await applyProfilePictureColor();
-                setTimeout(() => window.location.reload(), 500);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            const data = await response.json();
-            Toast.error(data.error || 'Error updating profile picture');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        Toast.error('Error connecting to server');
-    }
-});
-
-// Handle form submission
-document.getElementById('profile-form').addEventListener('submit', async (e) => {
+document.getElementById('editForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const formData = new FormData(e.target);
     try {
         const response = await fetch('/profile/update', {
@@ -217,37 +117,69 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(Object.fromEntries(formData))
+            body: JSON.stringify({
+                name: formData.get('name'),
+                bio: formData.get('bio'),
+                location: formData.get('location'),
+                website: formData.get('website')
+            })
         });
-        
-        if (response.ok) {
-            window.location.reload();
+        const data = await response.json();
+        if (data.error) {
+            Toast.error(data.error);
         } else {
-            alert('Error updating profile');
+            Toast.success('Profile updated successfully');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error updating profile');
+        Toast.error('Error updating profile');
     }
 });
 
-async function resetProfilePicture() {
-    if (!confirm('Are you sure you want to reset your profile picture?')) return;
-    
+async function updateProfilePicture(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+
     try {
-        const response = await fetch('/profile/reset-picture', {
-            method: 'POST'
+        const response = await fetch('/profile/picture', {
+            method: 'POST',
+            body: formData
         });
-        
-        if (response.ok) {
-            window.location.reload();
+        const data = await response.json();
+        if (data.error) {
+            Toast.error(data.error);
         } else {
-            const data = await response.json();
-            Toast.error(data.error || 'Error resetting profile picture');
+            Toast.success('Profile picture updated successfully');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         }
     } catch (error) {
-        console.error('Error:', error);
-        Toast.error('Error connecting to server');
+        Toast.error('Error updating profile picture');
+    }
+}
+
+async function resetProfilePicture() {
+    try {
+        const response = await fetch('/profile/picture/reset', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Profile picture reset successfully');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        }
+    } catch (error) {
+        Toast.error('Error resetting profile picture');
     }
 }
 </script>

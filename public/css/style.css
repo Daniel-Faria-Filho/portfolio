@@ -1301,6 +1301,7 @@ html {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    padding: 0 1rem;
 }
 
 .action-button {
@@ -1450,12 +1451,14 @@ html {
 
     .profile-picture-actions {
         margin-top: 50px;
-        flex-direction: column;
+        gap: 0.5rem;  /* Reduce gap between buttons */
+        padding: 0 0.5rem;  /* Less padding on sides */
     }
 
     .action-button {
-        width: 100%;
-        justify-content: center;
+        padding: 0.6rem 1rem;  /* Smaller padding */
+        font-size: 0.8rem;  /* Smaller font */
+        min-width: 120px;  /* Set minimum width */
     }
 
     .card-header {
@@ -1871,4 +1874,94 @@ html {
 
 .view-invoice:hover {
     background: rgba(52, 152, 219, 0.1);
+}
+
+/* Mobile Optimization for Settings Page */
+@media (max-width: 768px) {
+    .settings-container {
+        grid-template-columns: 1fr;  /* Stack cards vertically on mobile */
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .settings-card {
+        padding: 1.5rem;
+    }
+
+    .settings-card h2 {
+        font-size: 1.3rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group input {
+        padding: 0.7rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .danger-zone {
+        padding: 1.5rem;
+    }
+
+    .update-button,
+    .danger-button {
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile Optimization for Billing Management */
+@media (max-width: 768px) {
+    .billing-container {
+        padding: 1rem;
+    }
+
+    .subscription-card,
+    .invoice-card {
+        padding: 1.2rem;
+    }
+
+    .invoice-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .invoice-details {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .invoice-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .invoice-status {
+        margin-left: auto;
+    }
+
+    .pay-button,
+    .view-invoice {
+        width: 48%; /* Allow buttons to sit side by side */
+        text-align: center;
+        padding: 0.7rem;
+    }
+
+    /* Improve status badge visibility */
+    .invoice-status {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    /* Better spacing for invoice details */
+    .invoice-date,
+    .invoice-amount {
+        font-size: 0.9rem;
+    }
 }
