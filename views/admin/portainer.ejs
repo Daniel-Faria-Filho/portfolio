@@ -2,11 +2,11 @@
 
 <div class="portainer-container">
     <iframe 
-        src="http://localhost:9000"
+        src="/administration/portainer-proxy/"
         frameborder="0" 
-        style="width: 100%; height: calc(100vh - 60px); border: none;"
-        allow="fullscreen"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"
+        style="width: 100%; height: 100%;"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+        allow="clipboard-read; clipboard-write"
     ></iframe>
 </div>
 
@@ -19,11 +19,20 @@
     bottom: 0;
     background: var(--bg);
     z-index: 1;
+    overflow: hidden;
 }
 
 /* Hide footer in portainer view */
 footer {
     display: none;
+}
+
+/* Ensure iframe takes full space */
+iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 </style>
 

@@ -4,6 +4,8 @@ const User = require('../models/User');
 const { sendInvitationEmail } = require('../utils/email');
 const crypto = require('crypto');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const Note = require('../models/Note');
 
 // Middleware to check if user is admin
 const isAdmin = (req, res, next) => {
@@ -299,9 +301,100 @@ router.delete('/invoices/:invoiceId/delete', isAdmin, async (req, res) => {
     }
 });
 
-// Portainer page
+// Get all notes
+router.get('/notes', isAdmin, async (req, res) => {
+    try {
+        const [notes, pinnedNotes] = await Promise.all([
+            Note.find({ pinned: false }).sort({ updatedAt: -1 }),
+            Note.find({ pinned: true }).sort({ updatedAt: -1 })
+        ]);
+
+        // Get unique categories
+        const categories = [...new Set([...notes, ...pinnedNotes]
+            .map(note => note.category)
+            .filter(category => category))];
+
+        res.render('admin/notes', { 
+            notes, 
+            pinnedNotes,
+            categories
+        });
+    } catch (error) {
+        console.error('Error fetching notes:', error);
+        res.status(500).send('Error fetching notes');
+    }
+});
+
+// Create new note
+router.post('/notes', isAdmin, async (req, res) => {
+    try {
+        const note = new Note(req.body);
+        await note.save();
+        res.json({ message: 'Note created successfully' });
+    } catch (error) {
+        console.error('Error creating note:', error);
+        res.status(500).json({ error: 'Error creating note' });
+    }
+});
+
+// Get single note
+router.get('/notes/:id', isAdmin, async (req, res) => {
+    try {
+        const note = await Note.findById(req.params.id);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        res.json(note);
+    } catch (error) {
+        console.error('Error fetching note:', error);
+        res.status(500).json({ error: 'Error fetching note' });
+    }
+});
+
+// Update note
+router.put('/notes/:id', isAdmin, async (req, res) => {
+    try {
+        const note = await Note.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json({ message: 'Note updated successfully' });
+    } catch (error) {
+        console.error('Error updating note:', error);
+        res.status(500).json({ error: 'Error updating note' });
+    }
+});
+
+// Delete note
+router.delete('/notes/:id', isAdmin, async (req, res) => {
+    try {
+        await Note.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting note:', error);
+        res.status(500).json({ error: 'Error deleting note' });
+    }
+});
+
+// Toggle pin status
+router.post('/notes/:id/pin', isAdmin, async (req, res) => {
+    try {
+        const note = await Note.findByIdAndUpdate(
+            req.params.id,
+            { pinned: req.body.pinned },
+            { new: true }
+        );
+        res.json({ message: 'Pin status updated successfully' });
+    } catch (error) {
+        console.error('Error updating pin status:', error);
+        res.status(500).json({ error: 'Error updating pin status' });
+    }
+});
+
+// Portainer redirect
 router.get('/portainer', isAdmin, (req, res) => {
-    res.render('admin/portainer', { user: req.user });
+    res.redirect('https://admin.danielfaria.cc/portainer');
 });
 
 module.exports = router; 

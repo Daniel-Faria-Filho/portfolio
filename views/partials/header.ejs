@@ -30,6 +30,15 @@
                 max-height: calc(100vh - 60px);
             }
         }
+        .dropdown-menu .divider {
+            height: 1px;
+            margin: 0;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            display: block;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +82,7 @@
                                     <i class="fas fa-cog"></i>
                                     Settings
                                 </a></li>
+                                <li class="divider"></li>
                                 <% if (user && user.email === 'inbox@danielfaria.cc') { %>
                                     <li><a href="/administration/invite" class="dropdown-item">
                                         <i class="fas fa-user-plus"></i>
