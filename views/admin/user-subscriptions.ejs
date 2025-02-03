@@ -1,0 +1,198 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card">
+        <div class="header-with-back">
+            <a href="/administration/users" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Back to Users
+            </a>
+            <h2>
+                <i class="fas fa-clock"></i>
+                Subscriptions for <%= user.name %>
+            </h2>
+        </div>
+        
+        <div class="subscriptions-list">
+            <% subscriptions.forEach(subscription => { %>
+                <div class="subscription-item">
+                    <div class="subscription-info">
+                        <div class="subscription-header">
+                            <h3>
+                                $<%= (subscription.items.data[0].price.unit_amount / 100).toFixed(2) %>/<%= subscription.items.data[0].price.recurring.interval %>
+                            </h3>
+                            <div class="subscription-status <%= subscription.status.toLowerCase() %>">
+                                <%= subscription.status %>
+                            </div>
+                        </div>
+                        <div class="subscription-details">
+                            <p class="subscription-date">Started: <%= new Date(subscription.start_date * 1000).toLocaleDateString() %></p>
+                            <p class="subscription-renewal">Next billing: <%= new Date(subscription.current_period_end * 1000).toLocaleDateString() %></p>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <a href="/administration/subscriptions/<%= subscription.id %>/edit" class="btn-edit">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<style>
+.header-with-back {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.btn-back {
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.subscription-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subscription-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.subscription-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.subscription-status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.subscription-status.active {
+    background: #28a745;
+    color: white;
+}
+
+.subscription-status.canceled {
+    background: #dc3545;
+    color: white;
+}
+
+.subscription-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.subscription-amount {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin: 0.5rem 0;
+}
+
+.btn-edit {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .header-with-back {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-with-back h2 {
+        font-size: 1.3rem;
+    }
+
+    .subscription-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .subscription-info {
+        width: 100%;
+    }
+
+    .subscription-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .subscription-status {
+        align-self: flex-start;
+    }
+
+    .subscription-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.8rem;
+    }
+
+    .btn-edit {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .subscription-amount {
+        font-size: 1rem;
+    }
+
+    .subscription-date, .subscription-renewal {
+        font-size: 0.9rem;
+    }
+
+    .subscription-header h3 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 

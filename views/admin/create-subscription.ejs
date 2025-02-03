@@ -1,0 +1,292 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card">
+        <h2>
+            <i class="fas fa-sync-alt"></i>
+            Create Subscription
+        </h2>
+        <form id="subscriptionForm" class="admin-form">
+            <div class="form-group">
+                <label for="customerId">Select Customer</label>
+                <div class="select-wrapper">
+                    <select id="customerId" name="customerId" class="customer-select" required>
+                        <option value="">Select a customer...</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.stripeCustomerId %>" 
+                                    data-email="<%= user.email %>">
+                                <%= user.name %> (<%= user.email %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Plan</label>
+                <div class="plan-options">
+                    <div class="plan-card selected" data-plan="hosting">
+                        <div class="plan-header">
+                            <h3>Website Hosting Renewal</h3>
+                            <div class="plan-price">$25/year</div>
+                        </div>
+                        <div class="plan-features">
+                            <ul>
+                                <li>Annual website hosting</li>
+                                <li>Domain management</li>
+                                <li>SSL certificate</li>
+                                <li>24/7 support</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="plan-card" data-plan="custom">
+                        <div class="plan-header">
+                            <h3>Custom Yearly Plan</h3>
+                            <div class="plan-price">Custom Amount</div>
+                        </div>
+                        <div id="customPlanFields" style="display: none;">
+                            <div class="form-group">
+                                <input type="text" id="customPlanName" placeholder="Plan Name" class="custom-input">
+                                <input type="number" id="customPlanPrice" placeholder="Yearly Price ($)" min="1" step="0.01" class="custom-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">First Billing Date</label>
+                <div class="date-input-wrapper">
+                    <input type="date" id="startDate" name="startDate" required>
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <p class="input-help">When should the first charge occur?</p>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                Create Subscription
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.customer-select {
+    width: 100%;
+    padding: 1rem;
+    padding-right: 2.5rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.customer-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.customer-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.customer-select option {
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 1rem;
+}
+
+.plan-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.plan-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.plan-card.selected {
+    border-color: var(--accent);
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.plan-header h3 {
+    margin: 0;
+    color: var(--accent);
+}
+
+.plan-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.plan-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.date-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-input-wrapper input[type="date"] {
+    width: 100%;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.date-input-wrapper i {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.input-help {
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .plan-card {
+        margin-bottom: 1rem;
+    }
+}
+
+.custom-input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--text);
+}
+
+.custom-input:last-child {
+    margin-bottom: 0;
+}
+</style>
+
+<script>
+// Plan selection
+document.querySelectorAll('.plan-card').forEach(card => {
+    card.addEventListener('click', function() {
+        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        
+        const customFields = document.getElementById('customPlanFields');
+        if (this.dataset.plan === 'custom') {
+            customFields.style.display = 'block';
+        } else {
+            customFields.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('subscriptionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const selectedPlan = document.querySelector('.plan-card.selected');
+    const formData = {
+        customerId: document.getElementById('customerId').value,
+        startDate: document.getElementById('startDate').value,
+        planType: selectedPlan.dataset.plan,
+        billingCycle: 'yearly'
+    };
+
+    if (formData.planType === 'custom') {
+        formData.customPlanName = document.getElementById('customPlanName').value;
+        formData.customPlanPrice = document.getElementById('customPlanPrice').value;
+        
+        if (!formData.customPlanName || !formData.customPlanPrice) {
+            return Toast.error('Please fill in all custom plan fields');
+        }
+    }
+
+    try {
+        const response = await fetch('/administration/subscriptions/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Subscription created successfully');
+            window.location.href = '/administration/subscriptions';
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+});
+
+// Set minimum date to today
+document.getElementById('startDate').min = new Date().toISOString().split('T')[0];
+</script>
+
+<%- include('../partials/footer') %> 

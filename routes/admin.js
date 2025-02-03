@@ -397,4 +397,205 @@ router.get('/portainer', isAdmin, (req, res) => {
     res.redirect('https://admin.danielfaria.cc/portainer');
 });
 
+// Subscription routes
+router.get('/create-subscription', isAdmin, async (req, res) => {
+    try {
+        const users = await User.find({}).sort({ name: 1 });
+        res.render('admin/create-subscription', { users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Error fetching users');
+    }
+});
+
+router.get('/subscriptions', isAdmin, async (req, res) => {
+    try {
+        const subscriptions = await stripe.subscriptions.list({
+            limit: 100,
+            expand: ['data.customer']
+        });
+        
+        res.render('admin/subscriptions', { subscriptions: subscriptions.data });
+    } catch (error) {
+        console.error('Error fetching subscriptions:', error);
+        res.status(500).send('Error fetching subscriptions');
+    }
+});
+
+router.post('/subscriptions/create', isAdmin, async (req, res) => {
+    try {
+        const { customerId, startDate, planType, customPlanName, customPlanPrice } = req.body;
+
+        let priceId;
+        if (planType === 'custom') {
+            // Create a product and price for custom subscriptions
+            const product = await stripe.products.create({
+                name: customPlanName
+            });
+            const price = await stripe.prices.create({
+                product: product.id,
+                unit_amount: Math.round(customPlanPrice * 100),
+                currency: 'usd',
+                recurring: { interval: 'year' }
+            });
+            priceId = price.id;
+        } else {
+            // Use the fixed price ID for hosting renewal
+            priceId = 'price_1QoED2CuXEQoh9N15qRXubka';
+        }
+
+        // Convert date to Unix timestamp and ensure it's in the future
+        const startTimestamp = Math.floor(new Date(startDate).getTime() / 1000);
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (startTimestamp <= now) {
+            return res.status(400).json({ error: 'Start date must be in the future' });
+        }
+
+        // Create the subscription
+        const subscription = await stripe.subscriptions.create({
+            customer: customerId,
+            items: [{ price: priceId }],
+            billing_cycle_anchor: startTimestamp,
+            proration_behavior: 'none',
+            payment_behavior: 'default_incomplete',
+            expand: ['latest_invoice.payment_intent']
+        });
+
+        res.json({ subscriptionId: subscription.id });
+    } catch (error) {
+        console.error('Error creating subscription:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.post('/subscriptions/:id/status', isAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        let subscription;
+        if (status === 'canceled') {
+            subscription = await stripe.subscriptions.cancel(id);
+        } else if (status === 'active') {
+            subscription = await stripe.subscriptions.resume(id);
+        } else if (status === 'paused') {
+            subscription = await stripe.subscriptions.update(id, {
+                pause_collection: {
+                    behavior: 'void'
+                }
+            });
+        }
+
+        res.json({ message: 'Subscription status updated' });
+    } catch (error) {
+        console.error('Error updating subscription status:', error);
+        res.status(500).json({ error: 'Error updating subscription status' });
+    }
+});
+
+// Add this route for editing subscriptions
+router.get('/subscriptions/:id/edit', isAdmin, async (req, res) => {
+    try {
+        const subscription = await stripe.subscriptions.retrieve(req.params.id, {
+            expand: ['customer', 'items.data.price.product']
+        });
+        
+        res.render('admin/edit-subscription', { subscription });
+    } catch (error) {
+        console.error('Error fetching subscription:', error);
+        res.redirect('/administration/subscriptions');
+    }
+});
+
+// Add route to handle subscription updates
+router.post('/subscriptions/:id/edit', isAdmin, async (req, res) => {
+    try {
+        const { startDate } = req.body;
+        const startTimestamp = Math.floor(new Date(startDate).getTime() / 1000);
+
+        // Get current subscription details before canceling
+        const subscription = await stripe.subscriptions.retrieve(req.params.id);
+
+        // Cancel the current subscription immediately
+        await stripe.subscriptions.cancel(req.params.id);
+
+        // Create new subscription with the new billing date
+        await stripe.subscriptions.create({
+            customer: subscription.customer,
+            items: subscription.items.data.map(item => ({
+                price: item.price.id,
+            })),
+            billing_cycle_anchor: startTimestamp,
+            proration_behavior: 'none',
+            payment_behavior: 'default_incomplete'
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating subscription:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Add these new routes
+router.get('/users/:userId/invoices', isAdmin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user || !user.stripeCustomerId) {
+            return res.redirect('/administration/users');
+        }
+
+        const invoices = await stripe.invoices.list({
+            customer: user.stripeCustomerId,
+            limit: 100
+        });
+
+        res.render('admin/user-invoices', { 
+            user,
+            invoices: invoices.data
+        });
+    } catch (error) {
+        console.error('Error fetching user invoices:', error);
+        res.redirect('/administration/users');
+    }
+});
+
+router.get('/users/:userId/subscriptions', isAdmin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user || !user.stripeCustomerId) {
+            return res.redirect('/administration/users');
+        }
+
+        const subscriptions = await stripe.subscriptions.list({
+            customer: user.stripeCustomerId,
+            limit: 100,
+            expand: ['data.default_payment_method', 'data.latest_invoice']
+        });
+
+        res.render('admin/user-subscriptions', {
+            user,
+            subscriptions: subscriptions.data
+        });
+    } catch (error) {
+        console.error('Error fetching user subscriptions:', error);
+        res.redirect('/administration/users');
+    }
+});
+
+// Add invoice view route
+router.get('/invoices/:id', isAdmin, async (req, res) => {
+    try {
+        const invoice = await stripe.invoices.retrieve(req.params.id, {
+            expand: ['customer', 'subscription']
+        });
+
+        res.render('admin/invoice-view', { invoice });
+    } catch (error) {
+        console.error('Error fetching invoice:', error);
+        res.redirect('/administration/users');
+    }
+});
+
 module.exports = router; 

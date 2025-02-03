@@ -1,0 +1,287 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card">
+        <div class="header-with-back">
+            <a href="/administration/users" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Users
+            </a>
+            <h2>
+                <i class="fas fa-file-invoice"></i>
+                Invoices for <%= user.name %>
+            </h2>
+        </div>
+        
+        <div class="invoices-list">
+            <% invoices.filter(invoice => invoice.status !== 'draft').forEach(invoice => { %>
+                <div class="invoice-item">
+                    <div class="invoice-info">
+                        <div class="invoice-header">
+                            <h3>Invoice #<%= invoice.number %></h3>
+                            <div class="invoice-status <%= invoice.status.toLowerCase() %>">
+                                <%= invoice.status %>
+                            </div>
+                        </div>
+                        <div class="invoice-details">
+                            <p class="invoice-amount">$<%= (invoice.amount_due / 100).toFixed(2) %></p>
+                            <p class="invoice-date">Created: <%= new Date(invoice.created * 1000).toLocaleDateString() %></p>
+                        </div>
+                    </div>
+                    <div class="invoice-actions">
+                        <% if (invoice.status === 'open') { %>
+                            <div class="status-dropdown" onclick="toggleStatusMenu(event, '<%= invoice.id %>')">
+                                <i class="fas fa-ellipsis-v"></i>
+                                <div class="status-menu" id="status-menu-<%= invoice.id %>">
+                                    <div class="status-option" onclick="updateInvoiceStatus('<%= invoice.id %>', 'paid')">
+                                        <i class="fas fa-check-circle"></i> Mark as Paid
+                                    </div>
+                                    <div class="status-option" onclick="updateInvoiceStatus('<%= invoice.id %>', 'open')">
+                                        <i class="fas fa-clock"></i> Mark as Open
+                                    </div>
+                                    <div class="status-option" onclick="updateInvoiceStatus('<%= invoice.id %>', 'void')">
+                                        <i class="fas fa-ban"></i> Void Invoice
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-secondary" onclick="resendInvoice('<%= invoice.id %>')">
+                                <i class="fas fa-paper-plane"></i>
+                                Resend
+                            </button>
+                        <% } %>
+                        <a href="/administration/invoices/<%= invoice.id %>" class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<style>
+.header-with-back {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.back-link {
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-link:hover {
+    opacity: 0.8;
+}
+
+.btn-view {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-view i {
+    font-size: 0.8rem;
+}
+
+.invoice-status {
+    position: relative;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.invoice-status.paid {
+    background: #28a745;
+    color: white;
+}
+
+.invoice-status.open {
+    background: #ffc107;
+    color: black;
+}
+
+.invoice-status.void {
+    background: #6c757d;
+    color: white;
+}
+
+.invoice-status.draft {
+    background: #17a2b8;
+    color: white;
+}
+
+.invoice-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-secondary {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    border: none;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    opacity: 0.9;
+}
+
+.status-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+    z-index: 100;
+    min-width: 200px;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.status-option {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.status-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.status-option i {
+    width: 16px;
+}
+
+.invoice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.invoice-header h3 {
+    margin: 0;
+}
+
+.status-dropdown {
+    position: relative;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.status-dropdown:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.status-dropdown i {
+    color: var(--text);
+    font-size: 1.2rem;
+}
+</style>
+
+<script>
+function toggleStatusMenu(event, invoiceId) {
+    event.stopPropagation();
+    const menu = document.getElementById(`status-menu-${invoiceId}`);
+    const allMenus = document.querySelectorAll('.status-menu');
+    
+    allMenus.forEach(m => {
+        if (m !== menu) m.style.display = 'none';
+    });
+    
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+async function updateInvoiceStatus(invoiceId, status) {
+    try {
+        const response = await fetch(`/administration/invoices/${invoiceId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Invoice status updated');
+            location.reload();
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+}
+
+async function resendInvoice(invoiceId) {
+    try {
+        const response = await fetch(`/administration/invoices/${invoiceId}/resend`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Invoice resent successfully');
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+}
+
+// Close status menus when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.status-dropdown')) {
+        document.querySelectorAll('.status-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 

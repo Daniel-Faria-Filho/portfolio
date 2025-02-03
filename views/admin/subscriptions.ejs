@@ -1,0 +1,202 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card">
+        <h2>
+            <i class="fas fa-clock"></i>
+            Manage Subscriptions
+        </h2>
+        <div class="subscriptions-list">
+            <% subscriptions.filter(sub => sub.status !== 'canceled').forEach(subscription => { %>
+                <div class="subscription-item" data-subscription-id="<%= subscription.id %>">
+                    <div class="subscription-info">
+                        <div class="subscription-header">
+                            <h3><%= subscription.name %></h3>
+                            <div class="subscription-status <%= subscription.status.toLowerCase() %>">
+                                <%= subscription.status %>
+                            </div>
+                        </div>
+                        <div class="subscription-details">
+                            <p class="customer-name"><%= subscription.customer.name %></p>
+                            <p class="subscription-amount">$<%= (subscription.plan.amount / 100).toFixed(2) %>/<%= subscription.plan.interval %></p>
+                            <p class="subscription-date">Started: <%= new Date(subscription.start_date * 1000).toLocaleDateString() %></p>
+                            <p class="subscription-renewal">Next billing: <%= new Date(subscription.current_period_end * 1000).toLocaleDateString() %></p>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <select class="status-select" data-subscription-id="<%= subscription.id %>">
+                            <option value="active" <%= subscription.status === 'active' ? 'selected' : '' %>>Active</option>
+                            <option value="paused" <%= subscription.status === 'paused' ? 'selected' : '' %>>Paused</option>
+                            <option value="canceled" <%= subscription.status === 'canceled' ? 'selected' : '' %>>Canceled</option>
+                        </select>
+                        <button class="edit-btn" onclick="editSubscription('<%= subscription.id %>')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', async function() {
+        const subscriptionId = this.dataset.subscriptionId;
+        const newStatus = this.value;
+        const subscriptionItem = this.closest('.subscription-item');
+        const statusBadge = subscriptionItem.querySelector('.subscription-status');
+
+        try {
+            const response = await fetch(`/administration/subscriptions/${subscriptionId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                Toast.error(data.error);
+                this.value = this.dataset.previousStatus;
+            } else {
+                Toast.success('Subscription status updated');
+                this.dataset.previousStatus = newStatus;
+                statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                statusBadge.className = 'subscription-status ' + newStatus.toLowerCase();
+            }
+        } catch (error) {
+            Toast.error('An error occurred');
+            this.value = this.dataset.previousStatus;
+        }
+    });
+
+    select.dataset.previousStatus = select.value;
+});
+
+async function editSubscription(subscriptionId) {
+    // Implement edit functionality
+    window.location.href = `/administration/subscriptions/${subscriptionId}/edit`;
+}
+</script>
+
+<style>
+.subscriptions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.subscription-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.subscription-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.subscription-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.subscription-header h3 {
+    margin: 0;
+    color: var(--accent);
+}
+
+.subscription-status {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+}
+
+.subscription-status.active {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.subscription-status.paused {
+    background: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+}
+
+.subscription-status.canceled {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.subscription-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.subscription-details p {
+    margin: 0;
+}
+
+.subscription-amount {
+    font-weight: bold;
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.subscription-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.status-select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+.edit-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.edit-btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .subscription-actions {
+        flex-wrap: wrap;
+    }
+
+    .subscription-header h3 {
+        padding-right: 100px;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 
