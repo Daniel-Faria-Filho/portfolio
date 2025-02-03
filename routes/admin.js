@@ -221,4 +221,82 @@ router.post('/create-invoice', isAdmin, async (req, res) => {
     }
 });
 
+// Get all invoices
+router.get('/invoices', isAdmin, async (req, res) => {
+    try {
+        // Get all invoices from Stripe
+        const invoices = await stripe.invoices.list({
+            limit: 100,
+            expand: ['data.customer']
+        });
+
+        res.render('admin/invoices', { 
+            user: req.user,
+            invoices: invoices.data
+        });
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        res.status(500).send('Error fetching invoices');
+    }
+});
+
+// Update invoice status
+router.post('/invoices/:invoiceId/status', isAdmin, async (req, res) => {
+    try {
+        const { invoiceId } = req.params;
+        const { status } = req.body;
+
+        let stripeAction;
+        switch (status) {
+            case 'void':
+                stripeAction = stripe.invoices.voidInvoice(invoiceId);
+                break;
+            case 'paid':
+                stripeAction = stripe.invoices.pay(invoiceId);
+                break;
+            // Add other status updates as needed
+        }
+
+        if (stripeAction) {
+            await stripeAction;
+        }
+
+        res.json({ message: 'Invoice status updated successfully' });
+    } catch (error) {
+        console.error('Error updating invoice status:', error);
+        res.status(500).json({ error: 'Error updating invoice status' });
+    }
+});
+
+// Resend invoice
+router.post('/invoices/:invoiceId/resend', isAdmin, async (req, res) => {
+    try {
+        const { invoiceId } = req.params;
+        await stripe.invoices.sendInvoice(invoiceId);
+        res.json({ message: 'Invoice resent successfully' });
+    } catch (error) {
+        console.error('Error resending invoice:', error);
+        res.status(500).json({ error: 'Error resending invoice' });
+    }
+});
+
+// Delete draft invoice
+router.delete('/invoices/:invoiceId/delete', isAdmin, async (req, res) => {
+    try {
+        const { invoiceId } = req.params;
+        
+        // First verify it's a draft
+        const invoice = await stripe.invoices.retrieve(invoiceId);
+        if (invoice.status !== 'draft') {
+            return res.status(400).json({ error: 'Only draft invoices can be deleted' });
+        }
+        
+        await stripe.invoices.del(invoiceId);
+        res.json({ message: 'Draft invoice deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting draft invoice:', error);
+        res.status(500).json({ error: 'Error deleting draft invoice' });
+    }
+});
+
 module.exports = router; 
