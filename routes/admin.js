@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const Note = require('../models/Note');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Middleware to check if user is admin
 const isAdmin = (req, res, next) => {
@@ -595,6 +597,28 @@ router.get('/invoices/:id', isAdmin, async (req, res) => {
     } catch (error) {
         console.error('Error fetching invoice:', error);
         res.redirect('/administration/users');
+    }
+});
+
+// Content management routes
+router.post('/content', isAdmin, async (req, res) => {
+    try {
+        const { type, content } = req.body;
+        const contentPath = path.join(__dirname, '../data/content.json');
+        
+        // Read existing content
+        const contentData = JSON.parse(await fs.readFile(contentPath, 'utf8'));
+        
+        // Update content
+        contentData[type] = content;
+        
+        // Write back to file
+        await fs.writeFile(contentPath, JSON.stringify(contentData, null, 2));
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating content:', error);
+        res.status(500).json({ error: 'Failed to update content' });
     }
 });
 

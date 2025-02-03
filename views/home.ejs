@@ -6,15 +6,18 @@
 </section>
 
 <section class="intro">
-    <p>Welcome to my portfolio! I'm a <span id="age">16</span>-year-old student pilot with a passion for web development and an even bigger passion for aviation. Based at Fitchburg Municipal Airport (KFIT), I'm not just learning to fly—I like to share my knoweldge I learn with others and use my passsion for web devolpment to furthor help others.</p>
-    
-    <div class="intro-links">
-        <p>🛩️ Want to know more about my aviation journey? Check out my <a href="/about">about page</a> where I share my experiences and goals in aviation.</p>
-        
-        <p>💻 Interested in my technical projects? Visit my <a href="/projects">projects page</a> to see how I'm combining my love for aviation with programming.</p>
-        
-        <p>🤝 Looking to collaborate, have a possible job I would be intersted in, or just want to chat about aviation? Don't hesitate to <a href="/contact">reach out</a>! Whether you're a fellow aviation enthusiast, a student pilot, someone who needs a website, or someone interested in learning about flying, I'm always excited to connect and share my knowledge.</p>
-    </div>
+    <% if (user && user.email === 'inbox@danielfaria.cc') { %>
+        <div class="editable-content" data-type="intro">
+            <div id="intro-text">
+                <%- content.intro %>
+            </div>
+            <button class="edit-btn" onclick="editContent('intro')">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+    <% } else { %>
+        <%- content.intro %>
+    <% } %>
     
     <div class="cta-buttons">
         <a href="/about" class="cta-button">Learn About Me</a>
@@ -22,4 +25,123 @@
     </div>
 </section>
 
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+
+<% if (user && user.email === 'inbox@danielfaria.cc') { %>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Content</h3>
+            <button class="close-modal" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editForm">
+            <textarea id="contentEditor" rows="10"></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentEditingType = '';
+
+function editContent(type) {
+    currentEditingType = type;
+    const content = document.getElementById(`${type}-text`).innerHTML;
+    document.getElementById('contentEditor').value = content;
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('contentEditor').value;
+
+    try {
+        const response = await fetch('/administration/content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: currentEditingType,
+                content
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            document.getElementById(`${currentEditingType}-text`).innerHTML = content;
+            closeEditModal();
+            Toast.success('Content updated successfully');
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+});
+</script>
+
+<style>
+.editable-content {
+    position: relative;
+    padding-right: 40px;
+}
+
+.edit-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 8px;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+}
+
+#contentEditor {
+    width: 100%;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+</style>
+<% } %> 

@@ -21,6 +21,7 @@ const auth = require('./middleware/auth'); // Fix the path to middleware
 const billingRouter = require('./routes/billing');
 const { verifyEmailSetup } = require('./utils/email');
 const adminRouter = require('./routes/admin');
+const contentData = require('./data/content.json');
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -76,11 +77,17 @@ function saveProjects(projects) {
 
 // Routes
 app.get('/', (req, res) => {
-    res.render('home', { user: res.locals.user });
+    res.render('home', { 
+        user: req.user,
+        content: contentData
+    });
 });
 
 app.get('/about', (req, res) => {
-    res.render('about', { user: res.locals.user });
+    res.render('about', { 
+        user: req.user,
+        content: contentData
+    });
 });
 
 app.get('/projects', (req, res) => {

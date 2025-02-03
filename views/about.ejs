@@ -7,14 +7,138 @@
         <img src="/images/plane-photo-2.jpg" alt="Me with aircraft 2">
     </div>
     <div class="bio">
-        <p>I'm currently a Junior in high school, balancing my academic studies with my passion for aviation and programming. As a student pilot training out of Fitchburg Municipal Airport (KFIT), I've found my second home among the aviation community.</p>
-        
-        <p>What truly sets my heart soaring is not just flying itself, but sharing my knowledge and enthusiasm with others. Whether I'm explaining the principles of flight to curious minds or helping fellow aviation enthusiasts understand complex concepts, teaching has become an integral part of my journey.</p>
-        
-        <p>At KFIT, I've had the opportunity to immerse myself in a vibrant aviation community, learning from experienced pilots and contributing to the next generation of aviators. This experience has taught me that aviation is more than just flying—it's about community, continuous learning, and passing on knowledge.</p>
-        
-        <p>While aviation is my primary passion, I'm also diving into the world of programming. I see many parallels between flying and coding—both require precision, problem-solving skills, and attention to detail. Just as I enjoy teaching aviation concepts, I look forward to collaborating with others in the tech community.</p>
+        <% if (user && user.email === 'inbox@danielfaria.cc') { %>
+            <div class="editable-content" data-type="bio">
+                <div id="bio-text">
+                    <%- content.bio %>
+                </div>
+                <button class="edit-btn" onclick="editContent('bio')">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+        <% } else { %>
+            <%- content.bio %>
+        <% } %>
     </div>
 </section>
 
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+
+<% if (user && user.email === 'inbox@danielfaria.cc') { %>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Content</h3>
+            <button class="close-modal" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editForm">
+            <textarea id="contentEditor" rows="10"></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentEditingType = '';
+
+function editContent(type) {
+    currentEditingType = type;
+    const content = document.getElementById(`${type}-text`).innerHTML;
+    document.getElementById('contentEditor').value = content;
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('contentEditor').value;
+
+    try {
+        const response = await fetch('/administration/content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: currentEditingType,
+                content
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            document.getElementById(`${currentEditingType}-text`).innerHTML = content;
+            closeEditModal();
+            Toast.success('Content updated successfully');
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+});
+</script>
+
+<style>
+.editable-content {
+    position: relative;
+    padding-right: 40px;
+}
+
+.edit-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    padding: 8px;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+}
+
+#contentEditor {
+    width: 100%;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+</style>
+<% } %> 
