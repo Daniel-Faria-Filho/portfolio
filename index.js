@@ -251,7 +251,7 @@ mongoose.connect(config.MONGODB_URI, {
 // Add authentication routes
 app.use('/auth', require('./routes/auth'));
 app.use('/billing', billingRouter);
-app.use('/admin', adminRouter);
+app.use('/administration', adminRouter);
 
 // Stripe webhook handler
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
