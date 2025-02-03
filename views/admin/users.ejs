@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const newName = newNameInput.value;
 
         try {
-            const response = await fetch(`/admin/users/${userId}/update-name`, {
+            const response = await fetch(`/administration/users/${userId}/update-name`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const userId = this.dataset.userId;
 
             try {
-                const response = await fetch(`/admin/users/${userId}/delete`, {
+                const response = await fetch(`/administration/users/${userId}/delete`, {
                     method: 'DELETE'
                 });
 

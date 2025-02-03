@@ -148,7 +148,7 @@ router.get('/create-invoice', isAdmin, async (req, res) => {
         });
     } catch (error) {
         console.error('Error loading invoice creation page:', error);
-        res.redirect('/admin/users?error=Error+loading+invoice+page');
+        res.redirect('/administration/users?error=Error+loading+invoice+page');
     }
 });
 

@@ -207,7 +207,7 @@ document.getElementById('createInvoiceForm').addEventListener('submit', async (e
     });
 
     try {
-        const response = await fetch('/admin/create-invoice', {
+        const response = await fetch('/administration/create-invoice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

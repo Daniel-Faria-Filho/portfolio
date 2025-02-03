@@ -32,7 +32,7 @@ document.getElementById('inviteForm').addEventListener('submit', async (e) => {
     const successMessage = document.getElementById('successMessage');
 
     try {
-        const response = await fetch('/admin/invite', {
+        const response = await fetch('/administration/invite', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
