@@ -1,0 +1,616 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card">
+        <h2>
+            <i class="fas fa-file-invoice-dollar"></i>
+            Create Invoice
+        </h2>
+        <form id="createInvoiceForm" class="admin-form">
+            <div class="form-group">
+                <label for="customerId">Select Customer</label>
+                <div class="select-wrapper">
+                    <select id="customerId" name="customerId" class="customer-select" required>
+                        <option value="">Select a customer...</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.stripeCustomerId %>" 
+                                    data-email="<%= user.email %>">
+                                <%= user.name %> (<%= user.email %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Line Items</label>
+                <div id="lineItems">
+                    <!-- Dynamic line items will be added here -->
+                </div>
+                
+                <div id="productSelection" style="display: none;" class="product-selection">
+                    <div class="select-wrapper">
+                        <select id="productSelect" class="product-select">
+                            <option value="">Select a product...</option>
+                            <% products.forEach(product => { %>
+                                <option value="<%= product.id %>" 
+                                        data-name="<%= product.name %>" 
+                                        data-price="<%= product.default_price.unit_amount/100 %>"
+                                        data-price-id="<%= product.default_price.id %>">
+                                    <%= product.name %> - $<%= product.default_price.unit_amount/100 %>
+                                </option>
+                            <% }); %>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
+                    <div class="product-selection-actions">
+                        <button type="button" class="btn-primary" onclick="confirmProductSelection()">Add</button>
+                        <button type="button" class="btn-secondary" onclick="cancelProductSelection()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div class="item-buttons">
+                    <button type="button" class="btn-secondary add-item-btn" onclick="addProductItem()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button type="button" class="btn-secondary add-item-btn" onclick="addCustomItem()">
+                        <i class="fas fa-plus"></i> Add Custom Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dueDate">Due Date</label>
+                <input type="date" id="dueDate" name="dueDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (Optional)</label>
+                <textarea id="notes" name="notes" rows="3"></textarea>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="sendEmail" name="sendEmail" checked>
+                    <label for="sendEmail">
+                        <span class="checkbox-icon"></span>
+                        Send invoice to customer's email
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                Create Invoice
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+let itemCounter = 0;
+
+function addProductItem() {
+    document.getElementById('productSelection').style.display = 'block';
+}
+
+function confirmProductSelection() {
+    const select = document.getElementById('productSelect');
+    const option = select.options[select.selectedIndex];
+    
+    if (!select.value) {
+        Toast.error('Please select a product');
+        return;
+    }
+
+    selectProduct(
+        select.value,
+        option.dataset.name,
+        parseFloat(option.dataset.price)
+    );
+    
+    select.selectedIndex = 0;
+    document.getElementById('productSelection').style.display = 'none';
+}
+
+function cancelProductSelection() {
+    document.getElementById('productSelect').selectedIndex = 0;
+    document.getElementById('productSelection').style.display = 'none';
+}
+
+function selectProduct(productId, name, price) {
+    const lineItems = document.getElementById('lineItems');
+    const priceId = document.querySelector(`option[value="${productId}"]`).dataset.priceId;
+    const itemHtml = `
+        <div class="line-item" id="item-${itemCounter}">
+            <input type="hidden" name="items[${itemCounter}][type]" value="product">
+            <input type="hidden" name="items[${itemCounter}][priceId]" value="${priceId}">
+            <div class="item-details">
+                <span class="item-name">${name}</span>
+                <span class="item-price">$${price}</span>
+            </div>
+            <div class="item-controls">
+                <input type="number" name="items[${itemCounter}][quantity]" value="1" min="1" class="quantity-input">
+                <button type="button" class="btn-danger" onclick="removeItem(${itemCounter})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    lineItems.insertAdjacentHTML('beforeend', itemHtml);
+    itemCounter++;
+    document.getElementById('productSelection').style.display = 'none';
+}
+
+function addCustomItem() {
+    const lineItems = document.getElementById('lineItems');
+    const itemHtml = `
+        <div class="line-item" id="item-${itemCounter}">
+            <input type="hidden" name="items[${itemCounter}][type]" value="custom">
+            <div class="item-details">
+                <input type="text" name="items[${itemCounter}][name]" placeholder="Item name" required>
+                <input type="number" name="items[${itemCounter}][price]" placeholder="Price" step="0.01" min="0" required>
+            </div>
+            <div class="item-controls">
+                <input type="number" name="items[${itemCounter}][quantity]" value="1" min="1" class="quantity-input">
+                <button type="button" class="btn-danger" onclick="removeItem(${itemCounter})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    lineItems.insertAdjacentHTML('beforeend', itemHtml);
+    itemCounter++;
+}
+
+function removeItem(id) {
+    document.getElementById(`item-${id}`).remove();
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Set minimum date to today for due date input
+document.getElementById('dueDate').min = new Date().toISOString().split('T')[0];
+
+document.getElementById('createInvoiceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = {
+        customerId: formData.get('customerId'),
+        items: [],
+        dueDate: formData.get('dueDate'),
+        notes: formData.get('notes'),
+        sendEmail: formData.get('sendEmail') === 'on'
+    };
+
+    // Collect all line items
+    const itemElements = document.querySelectorAll('.line-item');
+    itemElements.forEach(item => {
+        const itemId = item.id.split('-')[1];
+        const itemData = {
+            type: formData.get(`items[${itemId}][type]`),
+            quantity: parseInt(formData.get(`items[${itemId}][quantity]`))
+        };
+
+        if (itemData.type === 'product') {
+            itemData.priceId = formData.get(`items[${itemId}][priceId]`);
+        } else {
+            itemData.name = formData.get(`items[${itemId}][name]`);
+            itemData.price = parseFloat(formData.get(`items[${itemId}][price]`));
+        }
+
+        data.items.push(itemData);
+    });
+
+    try {
+        const response = await fetch('/admin/create-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.error) {
+            Toast.error(result.error);
+        } else {
+            Toast.success('Invoice created successfully');
+            // Clear the form
+            form.reset();
+            document.getElementById('lineItems').innerHTML = '';
+            itemCounter = 0;
+            
+            // Show success message with link to invoice
+            const successHtml = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Invoice created successfully!</p>
+                    ${result.invoiceUrl ? 
+                        `<a href="${result.invoiceUrl}" target="_blank" class="btn-primary">
+                            <i class="fas fa-external-link-alt"></i> View Invoice
+                        </a>` : ''}
+                </div>
+            `;
+            
+            // Insert success message at the top of the form
+            form.insertAdjacentHTML('afterbegin', successHtml);
+            
+            // Remove success message after 5 seconds
+            setTimeout(() => {
+                const successMessage = form.querySelector('.success-message');
+                if (successMessage) {
+                    successMessage.remove();
+                }
+            }, 5000);
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+.line-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.item-details {
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.item-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.quantity-input {
+    width: 60px;
+    text-align: center;
+}
+
+.item-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.product-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.product-item h4 {
+    margin: 0;
+    color: var(--accent);
+}
+
+.product-item .price {
+    margin: 0.5rem 0 0 0;
+    color: var(--text-secondary);
+}
+
+.checkbox-group {
+    margin: 1.5rem 0;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+/* Customer Select Styling */
+.customer-select {
+    width: 100%;
+    padding: 1rem;
+    padding-right: 2.5rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.customer-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.customer-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Style the options */
+.customer-select option {
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* Style the option when hovering */
+.customer-select option:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* Product Selection Styling */
+.product-selection {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.product-select {
+    width: 100%;
+    padding: 1rem;
+    padding-right: 2.5rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.product-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Style the options */
+.product-select option {
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* Style the option when hovering */
+.product-select option:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.product-selection-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* Button Styling */
+.add-item-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gradient);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-item-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Custom Checkbox Styling */
+.custom-checkbox {
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+    display: inline-block;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkbox-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox:hover input ~ .checkbox-icon {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-checkbox input:checked ~ .checkbox-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.checkbox-icon:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkbox-icon:after {
+    display: block;
+}
+
+/* Add these new styles */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+/* Fix checkbox styles */
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+}
+
+.custom-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox input:checked ~ label .checkbox-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.custom-checkbox input:checked ~ label .checkbox-icon:after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Success Message Styling */
+.success-message {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-message i {
+    color: #2ecc71;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.success-message p {
+    margin: 0.5rem 0;
+    color: var(--text);
+}
+
+.success-message .btn-primary {
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<%- include('../partials/footer') %> 
