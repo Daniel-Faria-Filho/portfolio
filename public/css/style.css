@@ -1984,3 +1984,40 @@ html {
     color: var(--text);
     margin: 0.5rem 0;
 }
+
+/* Admin styles */
+.admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent);
+    margin-bottom: 2rem;
+}
+
+.admin-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 1rem;
+    }
+    
+    .admin-card {
+        padding: 1.5rem;
+    }
+}

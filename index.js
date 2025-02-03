@@ -20,6 +20,7 @@ const port = 9002;
 const auth = require('./middleware/auth'); // Fix the path to middleware
 const billingRouter = require('./routes/billing');
 const { verifyEmailSetup } = require('./utils/email');
+const adminRouter = require('./routes/admin');
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -40,12 +41,16 @@ app.use(async (req, res, next) => {
         try {
             const decoded = jwt.verify(req.cookies.token, config.JWT_SECRET);
             const user = await User.findById(decoded.userId);
-            res.locals.user = user;
+            req.user = user;  // Add full user object to request
+            res.locals.user = user;  // Add user to response locals for views
+            next();
         } catch (error) {
             res.clearCookie('token');
+            next();
         }
+    } else {
+        next();
     }
-    next();
 });
 
 // Email configuration
@@ -246,6 +251,7 @@ mongoose.connect(config.MONGODB_URI, {
 // Add authentication routes
 app.use('/auth', require('./routes/auth'));
 app.use('/billing', billingRouter);
+app.use('/admin', adminRouter);
 
 // Stripe webhook handler
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {

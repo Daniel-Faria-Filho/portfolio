@@ -42,7 +42,9 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     },
     resetPasswordToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    setupToken: String,
+    setupTokenExpires: Date
 }, { timestamps: true });
 
 userSchema.methods.getAvatar = function() {

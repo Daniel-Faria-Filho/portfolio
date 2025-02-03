@@ -155,4 +155,81 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
+// Route to show setup account page
+router.get('/setup/:token', async (req, res) => {
+    try {
+        const user = await User.findOne({
+            setupToken: req.params.token,
+            setupTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.redirect('/auth/login?error=invalid');
+        }
+
+        res.render('auth/setup-account', { token: req.params.token });
+    } catch (error) {
+        res.redirect('/auth/login?error=error');
+    }
+});
+
+// Route to handle account setup
+router.post('/setup-account', async (req, res) => {
+    try {
+        const { password, name, token } = req.body;
+
+        const user = await User.findOne({
+            setupToken: token,
+            setupTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Setup token is invalid or has expired' });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Update user
+        user.password = hashedPassword;
+        user.name = name;
+        user.setupToken = undefined;
+        user.setupTokenExpires = undefined;
+        await user.save();
+
+        // Update Stripe customer name
+        try {
+            await stripe.customers.update(
+                user.stripeCustomerId,
+                {
+                    name: name
+                }
+            );
+        } catch (stripeError) {
+            console.error('Error updating Stripe customer name:', stripeError);
+            // Continue with account setup even if Stripe update fails
+        }
+
+        // Create JWT token
+        const jwtToken = jwt.sign(
+            { userId: user._id },
+            config.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Set cookie
+        res.cookie('token', jwtToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        res.json({ message: 'Account setup successful' });
+    } catch (error) {
+        console.error('Setup error:', error);
+        res.status(500).json({ error: 'Error setting up account' });
+    }
+});
+
 module.exports = router; 

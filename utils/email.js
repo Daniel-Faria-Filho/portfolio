@@ -65,8 +65,49 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     }
 };
 
+const sendInvitationEmail = async (email, setupToken) => {
+    try {
+        const setupUrl = `http://localhost:9002/auth/setup/${setupToken}`;
+        
+        const mailOptions = {
+            from: {
+                name: 'Daniel Faria',
+                address: 'noreply@danielfaria.cc'
+            },
+            sender: process.env.SMTP_USER,
+            to: email,
+            subject: 'Welcome to Daniel Faria Tech Services',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #3498db;">Welcome!</h2>
+                    <p>You've been invited to access Daniel Faria Tech Services Online Billing Page. Click the button below to set up your account:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${setupUrl}" style="
+                            background: linear-gradient(135deg, #3498db, #2980b9);
+                            color: white;
+                            padding: 12px 24px;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            display: inline-block;
+                        ">Set Up Account</a>
+                    </div>
+                    <p style="color: #666; font-size: 14px;">This link will expire in 5 days.</p>
+                </div>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Invitation email sent:', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Error sending invitation email:', error);
+        throw error;
+    }
+};
+
 // Export both functions
 module.exports = {
     sendPasswordResetEmail,
-    verifyEmailSetup
+    verifyEmailSetup,
+    sendInvitationEmail
 }; 

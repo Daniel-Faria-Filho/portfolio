@@ -1,0 +1,66 @@
+<%- include('../partials/header') %>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Set Up Your Account</h2>
+        <form id="setupForm" class="auth-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Choose Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <input type="hidden" id="token" name="token" value="<%= token %>">
+            <button type="submit" class="btn-primary">Complete Setup</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('setupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
+    const name = e.target.name.value;
+    const token = e.target.token.value;
+
+    if (password !== confirmPassword) {
+        return Toast.error('Passwords do not match');
+    }
+
+    try {
+        const response = await fetch('/auth/setup-account', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                password,
+                name,
+                token 
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Account setup successful');
+            setTimeout(() => {
+                window.location.href = '/billing-management';
+            }, 2000);
+        }
+    } catch (error) {
+        Toast.error('An error occurred. Please try again.');
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 
