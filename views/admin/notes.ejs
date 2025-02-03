@@ -1,0 +1,662 @@
+<%- include('../partials/header') %>
+
+<div class="admin-container">
+    <div class="admin-card notes-container">
+        <div class="notes-header">
+            <h2>
+                <i class="fas fa-sticky-note"></i>
+                Notes
+            </h2>
+            <div class="notes-actions">
+                <button class="btn-primary" onclick="showNewNoteModal()">
+                    <i class="fas fa-plus"></i> New Note
+                </button>
+                <div class="search-bar">
+                    <input type="text" id="searchNotes" placeholder="Search notes...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <select id="categoryFilter" onchange="filterNotes()">
+                    <option value="">All Categories</option>
+                    <% categories.forEach(category => { %>
+                        <option value="<%= category %>"><%= category %></option>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+
+        <div class="notes-grid">
+            <% pinnedNotes.forEach(note => { %>
+                <%- include('_note_card', { note: note }) %>
+            <% }); %>
+            
+            <% if (pinnedNotes.length > 0 && notes.length > 0) { %>
+                <div class="notes-divider">Other Notes</div>
+            <% } %>
+            
+            <% notes.forEach(note => { %>
+                <%- include('_note_card', { note: note }) %>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<!-- New/Edit Note Modal -->
+<div id="noteModal" class="modal">
+    <div class="modal-content note-modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">New Note</h3>
+            <button class="close-modal" onclick="closeNoteModal()">&times;</button>
+        </div>
+        <form id="noteForm">
+            <input type="hidden" id="noteId">
+            <div class="form-group">
+                <input type="text" id="noteTitle" placeholder="Title" required>
+            </div>
+            <div class="form-group">
+                <textarea id="noteContent" placeholder="Note content..." rows="6" required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <select id="noteCategory" class="category-select">
+                        <option value="">Select Category</option>
+                        <option value="new">+ New Category</option>
+                        <% categories.forEach(category => { %>
+                            <option value="<%= category %>"><%= category %></option>
+                        <% }); %>
+                    </select>
+                    <input type="text" id="newCategory" class="new-category-input" placeholder="Enter new category" style="display: none;">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="noteTags" placeholder="Tags (comma separated)">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="color-picker">
+                    <span>Color:</span>
+                    <div class="color-options">
+                        <button type="button" class="color-option default" data-color="default"></button>
+                        <button type="button" class="color-option blue" data-color="blue"></button>
+                        <button type="button" class="color-option green" data-color="green"></button>
+                        <button type="button" class="color-option yellow" data-color="yellow"></button>
+                        <button type="button" class="color-option red" data-color="red"></button>
+                        <button type="button" class="color-option purple" data-color="purple"></button>
+                    </div>
+                </div>
+                <div class="pin-option">
+                    <label>
+                        <input type="checkbox" id="notePinned">
+                        Pin to top
+                    </label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeNoteModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save Note</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let selectedColor = 'default';
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeSearchAndFilters();
+    initializeColorPicker();
+    initializeNoteForm();
+
+    // Handle category selection
+    const categorySelect = document.getElementById('noteCategory');
+    const newCategoryInput = document.getElementById('newCategory');
+
+    categorySelect.addEventListener('change', function() {
+        if (this.value === 'new') {
+            this.style.display = 'none';
+            newCategoryInput.style.display = 'block';
+            newCategoryInput.focus();
+        }
+    });
+
+    newCategoryInput.addEventListener('blur', function() {
+        if (!this.value) {
+            this.style.display = 'none';
+            categorySelect.style.display = 'block';
+            categorySelect.value = '';
+        }
+    });
+});
+
+function initializeSearchAndFilters() {
+    const searchInput = document.getElementById('searchNotes');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(filterNotes, 300);
+    });
+}
+
+function initializeColorPicker() {
+    document.querySelectorAll('.color-option').forEach(button => {
+        button.addEventListener('click', () => {
+            selectedColor = button.dataset.color;
+            document.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
+            button.classList.add('selected');
+        });
+    });
+}
+
+function initializeNoteForm() {
+    document.getElementById('noteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const noteId = document.getElementById('noteId').value;
+        const categorySelect = document.getElementById('noteCategory');
+        const newCategoryInput = document.getElementById('newCategory');
+        
+        // Determine the correct category value
+        const category = categorySelect.value === 'new' ? newCategoryInput.value : categorySelect.value;
+        
+        const formData = {
+            title: document.getElementById('noteTitle').value,
+            content: document.getElementById('noteContent').value,
+            category: category,
+            tags: document.getElementById('noteTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+            color: selectedColor,
+            pinned: document.getElementById('notePinned').checked
+        };
+
+        try {
+            const response = await fetch(`/administration/notes${noteId ? `/${noteId}` : ''}`, {
+                method: noteId ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                Toast.error(data.error);
+            } else {
+                Toast.success(noteId ? 'Note updated' : 'Note created');
+                location.reload();
+            }
+        } catch (error) {
+            Toast.error('An error occurred');
+        }
+    });
+}
+
+function showNewNoteModal() {
+    document.getElementById('modalTitle').textContent = 'New Note';
+    document.getElementById('noteId').value = '';
+    document.getElementById('noteForm').reset();
+    document.getElementById('newCategory').style.display = 'none';
+    document.getElementById('noteCategory').style.display = 'block';
+    document.getElementById('noteModal').style.display = 'flex';
+    selectedColor = 'default';
+    updateColorPicker();
+}
+
+function editNote(noteId) {
+    // Fetch note data and populate modal
+    fetch(`/administration/notes/${noteId}`)
+        .then(response => response.json())
+        .then(note => {
+            document.getElementById('modalTitle').textContent = 'Edit Note';
+            document.getElementById('noteId').value = note._id;
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteContent').value = note.content;
+            document.getElementById('noteCategory').value = note.category;
+            document.getElementById('noteTags').value = note.tags.join(', ');
+            document.getElementById('notePinned').checked = note.pinned;
+            selectedColor = note.color;
+            updateColorPicker();
+            document.getElementById('noteModal').style.display = 'flex';
+        })
+        .catch(() => Toast.error('Error loading note'));
+}
+
+function updateColorPicker() {
+    document.querySelectorAll('.color-option').forEach(button => {
+        button.classList.toggle('selected', button.dataset.color === selectedColor);
+    });
+}
+
+function closeNoteModal() {
+    document.getElementById('noteModal').style.display = 'none';
+}
+
+async function deleteNote(noteId) {
+    if (!confirm('Are you sure you want to delete this note?')) return;
+
+    try {
+        const response = await fetch(`/administration/notes/${noteId}`, {
+            method: 'DELETE'
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            Toast.success('Note deleted');
+            document.querySelector(`.note-card[data-note-id="${noteId}"]`).remove();
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+}
+
+async function togglePin(noteId) {
+    try {
+        const noteCard = document.querySelector(`.note-card[data-note-id="${noteId}"]`);
+        const currentlyPinned = noteCard.classList.contains('pinned');
+
+        const response = await fetch(`/administration/notes/${noteId}/pin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pinned: !currentlyPinned })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            Toast.error(data.error);
+        } else {
+            location.reload(); // Reload to reorder notes
+        }
+    } catch (error) {
+        Toast.error('An error occurred');
+    }
+}
+
+function filterNotes() {
+    const searchTerm = document.getElementById('searchNotes').value.toLowerCase();
+    const category = document.getElementById('categoryFilter').value;
+    
+    document.querySelectorAll('.note-card').forEach(card => {
+        const title = card.querySelector('.note-title').textContent.toLowerCase();
+        const content = card.querySelector('.note-content').textContent.toLowerCase();
+        const noteCategory = card.dataset.category.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
+        const matchesCategory = !category || noteCategory === category.toLowerCase();
+        
+        card.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+    });
+}
+</script>
+
+<style>
+.notes-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.notes-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-bar {
+    position: relative;
+}
+
+.search-bar input {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-bg);
+    color: var(--text);
+    width: 200px;
+}
+
+.search-bar i {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.notes-divider {
+    grid-column: 1 / -1;
+    margin: 2rem 0;
+    text-align: center;
+    position: relative;
+    color: var(--text-secondary);
+}
+
+.notes-divider::before,
+.notes-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 60px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.notes-divider::before {
+    left: 0;
+}
+
+.notes-divider::after {
+    right: 0;
+}
+
+.note-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.note-card.blue { background: rgba(52, 152, 219, 0.1); }
+.note-card.green { background: rgba(46, 204, 113, 0.1); }
+.note-card.yellow { background: rgba(241, 196, 15, 0.1); }
+.note-card.red { background: rgba(231, 76, 60, 0.1); }
+.note-card.purple { background: rgba(155, 89, 182, 0.1); }
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.note-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--accent);
+    word-break: break-word;
+}
+
+.note-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.note-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.2rem;
+    transition: color 0.3s ease;
+}
+
+.note-action-btn:hover {
+    color: var(--accent);
+}
+
+.note-content {
+    margin-bottom: 1rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.note-tag {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.color-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-option.selected {
+    border-color: var(--accent);
+    transform: scale(1.1);
+}
+
+.color-option.default { background: var(--card-bg); }
+.color-option.blue { background: rgba(52, 152, 219, 0.2); }
+.color-option.green { background: rgba(46, 204, 113, 0.2); }
+.color-option.yellow { background: rgba(241, 196, 15, 0.2); }
+.color-option.red { background: rgba(231, 76, 60, 0.2); }
+.color-option.purple { background: rgba(155, 89, 182, 0.2); }
+
+@media (max-width: 768px) {
+    .notes-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .notes-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .search-bar input {
+        width: 100%;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.note-modal {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    color: var(--text);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--accent);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.close-modal:hover {
+    color: var(--text);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.category-select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-bg);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.new-category-input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Style select dropdown options */
+select option {
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 0.75rem;
+}
+
+/* Style select when opened */
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Remove default select arrow in some browsers */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+/* Remove default select arrow in Firefox */
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 var(--text);
+}
+
+/* Remove default select arrow in IE */
+select::-ms-expand {
+    display: none;
+}
+</style>
+
+<%- include('../partials/footer') %> 

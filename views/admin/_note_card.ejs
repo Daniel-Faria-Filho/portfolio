@@ -1,0 +1,32 @@
+<div class="note-card <%= note.color %> <%= note.pinned ? 'pinned' : '' %>" 
+     data-note-id="<%= note._id %>"
+     data-category="<%= note.category %>">
+    <div class="note-header">
+        <h3 class="note-title"><%= note.title %></h3>
+        <div class="note-actions">
+            <button class="note-action-btn" onclick="togglePin('<%= note._id %>')" title="<%= note.pinned ? 'Unpin' : 'Pin' %>">
+                <i class="fas fa-thumbtack" style="color: <%= note.pinned ? 'var(--accent)' : 'inherit' %>"></i>
+            </button>
+            <button class="note-action-btn" onclick="editNote('<%= note._id %>')" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="note-action-btn" onclick="deleteNote('<%= note._id %>')" title="Delete">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    <div class="note-content"><%= note.content %></div>
+    <div class="note-footer">
+        <div class="note-category"><%= note.category %></div>
+        <% if (note.tags && note.tags.length > 0) { %>
+            <div class="note-tags">
+                <% note.tags.forEach(tag => { %>
+                    <span class="note-tag">#<%= tag %></span>
+                <% }); %>
+            </div>
+        <% } %>
+        <div class="note-date" title="Last updated">
+            <%= new Date(note.updatedAt).toLocaleDateString() %>
+        </div>
+    </div>
+</div> 

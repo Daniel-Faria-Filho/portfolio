@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+
+<div class="portainer-container">
+    <iframe 
+        src="http://localhost:9000"
+        frameborder="0" 
+        style="width: 100%; height: calc(100vh - 60px); border: none;"
+        allow="fullscreen"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"
+    ></iframe>
+</div>
+
+<style>
+.portainer-container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    z-index: 1;
+}
+
+/* Hide footer in portainer view */
+footer {
+    display: none;
+}
+</style>
+
+<%- include('../partials/footer') %> 

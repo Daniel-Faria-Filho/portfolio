@@ -8,6 +8,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="/js/toast.js"></script>
+    <style>
+        @media (max-width: 768px) {
+            .main-nav {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--bg);
+                padding: 1rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .main-nav.show {
+                transform: translateX(0);
+                height: calc(100vh - 60px);
+                max-height: calc(100vh - 60px);
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -66,6 +89,15 @@
                                     <li><a href="/administration/invoices" class="dropdown-item">
                                         <i class="fas fa-file-invoice"></i>
                                         Manage Invoices
+                                    </a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="/administration/notes" class="dropdown-item">
+                                        <i class="fas fa-sticky-note"></i>
+                                        Notes
+                                    </a></li>
+                                    <li><a href="/administration/portainer" class="dropdown-item">
+                                        <i class="fas fa-server"></i>
+                                        Portainer
                                     </a></li>
                                 <% } %>
                                 <li class="divider"></li>

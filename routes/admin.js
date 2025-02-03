@@ -299,4 +299,9 @@ router.delete('/invoices/:invoiceId/delete', isAdmin, async (req, res) => {
     }
 });
 
+// Portainer page
+router.get('/portainer', isAdmin, (req, res) => {
+    res.render('admin/portainer', { user: req.user });
+});
+
 module.exports = router; 
