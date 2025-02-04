@@ -1,10 +1,38 @@
     </main>
-    <footer>
-        <p>&copy; <%= new Date().getFullYear() %> Daniel B. Faria Filho</p>
-        <div class="contact-info">
-            <p>Discord: <span class="discord-username">daniel_faria</span></p>
-            <p>Email: <a href="mailto:inquiries@danielfaria.cc">inquiries@danielfaria.cc</a></p>
-            <p>Phone: <a href="tel:774-418-5858">+1 (774) 418-5858</a></p>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <div class="contact-links">
+                    <a href="mailto:inquiries@danielfaria.cc" class="footer-link">
+                        <i class="fas fa-envelope"></i>
+                        inquiries@danielfaria.cc
+                    </a>
+                    <a href="tel:774-418-5858" class="footer-link">
+                        <i class="fas fa-phone"></i>
+                        +1 (774) 418-5858
+                    </a>
+                    <div class="footer-link">
+                        <i class="fab fa-discord"></i>
+                        daniel_faria
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <div class="social-links">
+                    <a href="https://github.com/Daniel-Faria-Filho/" target="_blank" class="social-link">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/daniel-faria-filho-87688834a/" target="_blank" class="social-link">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> Daniel B. Faria Filho. All rights reserved.</p>
         </div>
     </footer>
     <script src="/js/age-update.js"></script>
