@@ -58,8 +58,8 @@ app.use(async (req, res, next) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'gdifaria1987@gmail.com',
-        pass: 'wmma jupp xwnm hgrc'
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
     }
 });
 
@@ -121,13 +121,13 @@ app.get('/auth/reset-password', (req, res) => {
 
 // Handle contact form submission
 app.post('/send-email', async (req, res) => {
-
     try {
         const mailOptions = {
-            from: req.body.email,
-            to: 'inbox@danielfaria.cc',
+            from: process.env.EMAIL_FROM_ADDRESS,
+            to: process.env.CONTACT_EMAIL,
+            replyTo: req.body.email,
             subject: `Portfolio Contact: ${req.body.subject}`,
-            text: `Name: ${req.body.name}\nEmail: ${req.body.email}\n\nMessage:\n${req.body.message}`
+            text: `Name: ${req.body.name}\nEmail: ${req.body.email}\n\nMessage:\n${req.body.message}\n\nSent via contact form`
         };
 
         await transporter.sendMail(mailOptions);

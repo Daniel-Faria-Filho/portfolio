@@ -4,17 +4,17 @@
             <div class="footer-section">
                 <h3>Contact</h3>
                 <div class="contact-links">
-                    <a href="mailto:inquiries@danielfaria.cc" class="footer-link">
+                    <a href="mailto:<%= process.env.CONTACT_EMAIL %>" class="footer-link">
                         <i class="fas fa-envelope"></i>
-                        inquiries@danielfaria.cc
+                        <%= process.env.CONTACT_EMAIL %>
                     </a>
-                    <a href="tel:774-418-5858" class="footer-link">
+                    <a href="tel:<%= process.env.CONTACT_PHONE.replace(/[^0-9+]/g, '') %>" class="footer-link">
                         <i class="fas fa-phone"></i>
-                        +1 (774) 418-5858
+                        <%= process.env.CONTACT_PHONE %>
                     </a>
                     <div class="footer-link">
                         <i class="fab fa-discord"></i>
-                        daniel_faria
+                        <%= process.env.CONTACT_DISCORD %>
                     </div>
                 </div>
             </div>
@@ -22,17 +22,17 @@
             <div class="footer-section">
                 <h3>Social Media</h3>
                 <div class="social-links">
-                    <a href="https://github.com/Daniel-Faria-Filho/" target="_blank" class="social-link">
+                    <a href="<%= process.env.GITHUB_URL %>" target="_blank" class="social-link">
                         <i class="fab fa-github"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/daniel-faria-filho-87688834a/" target="_blank" class="social-link">
+                    <a href="<%= process.env.LINKEDIN_URL %>" target="_blank" class="social-link">
                         <i class="fab fa-linkedin"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; <%= new Date().getFullYear() %> Daniel B. Faria Filho. All rights reserved.</p>
+            <p>&copy; <%= new Date().getFullYear() %> <%= process.env.COPYRIGHT_NAME %>. All rights reserved.</p>
         </div>
     </footer>
     <script src="/js/age-update.js"></script>

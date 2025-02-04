@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daniel Faria - Tech Services</title>
+    <title><%= process.env.SITE_NAME %><%= process.env.SITE_TITLE_SUFFIX %></title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/png" href="/images/DF2.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -46,8 +46,7 @@
     <header>
         <div class="header-content">
             <a href="/" class="logo-section">
-
-                <div class="name">&lt;Daniel.Faria&gt;</div>
+                <div class="name"><%= process.env.SITE_LOGO_TEXT %></div>
             </a>
 
             <nav class="main-nav">
@@ -84,7 +83,7 @@
                                     Settings
                                 </a></li>
                                 <li class="divider"></li>
-                                <% if (user && user.email === 'inbox@danielfaria.cc') { %>
+                                <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
                                     <li><a href="/administration/invite" class="dropdown-item">
                                         <i class="fas fa-user-plus"></i>
                                         Invite Users

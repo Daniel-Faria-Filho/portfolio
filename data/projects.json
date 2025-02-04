@@ -1,19 +1,19 @@
 {
   "projects": [
     {
+      "id": 1734229361359,
+      "title": "Personal Portfolio",
+      "description": "I have designed and produced my own personal portfolio and customer management website. It had extremely advanced backend/frontend features and is integrated with stripe. This way I can easily manage my customers, send/view invoices, and make/manage subscriptions."
+    },
+    {
+      "id": 1738437062179,
+      "title": "San Juan CERAP Webmaster Projects",
+      "description": "As the San Juan CERAP's Webmaster on the VATSIM Network for Aviation Enthusiasts I have Designed Discord/Web applications for the community. All coding. Very good learning experience."
+    },
+    {
       "id": 1734229211500,
       "title": "FlyAway Virtual Flight School",
       "description": "FlyAway was a Discord community that aimed to help new Simulator Pilots learn how to fly realistically. I designed and developed the Discord bot and website for the community. The site and bot worked together via API that made them communicate user information and functions. It was a very complex system, but it gave me lot's of coding, backend, frontend, github, and other valuable knowledge moving forward. \n\nThe site is using Node.js, ejs extension, extensive API, and hosted using Nginx to flyawayvirtual.com."
-    },
-    {
-      "id": 1734229361359,
-      "title": "Personal Portfolio",
-      "description": "I have designed and produced my own personal portfolio you are currently reading. This gave me development and designing experience valuable for the future."
-    },
-    {
-      "id": 1734229529557,
-      "title": "VATRAIN",
-      "description": "VATRAIN was an aviation community discontinued in 2023. I designed a basic website using WIX and used zapier for a basic system. "
     },
     {
       "id": 1734229619727,
@@ -26,9 +26,9 @@
       "description": "I have designed a professional website for a company called Alpha Tiles Services using WIX. It was a basic project to display and show company information."
     },
     {
-      "id": 1738437062179,
-      "title": "San Juan CERAP Webmaster Projects",
-      "description": "As the San Juan CERAP's Webmaster on the VATSIM Network for Aviation Enthusiasts I have Designed Discord/Web applications for the community. All coding. Very good learning experience."
+      "id": 1734229529557,
+      "title": "VATRAIN",
+      "description": "VATRAIN was an aviation community discontinued in 2023. I designed a basic website using WIX and used zapier for a basic system. "
     }
   ]
 }

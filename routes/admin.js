@@ -443,7 +443,7 @@ router.post('/subscriptions/create', isAdmin, async (req, res) => {
             priceId = price.id;
         } else {
             // Use the fixed price ID for hosting renewal
-            priceId = 'price_1QoED2CuXEQoh9N15qRXubka';
+            priceId = process.env.HOSTING_YEARLY_PRICE_ID;
         }
 
         // Convert date to Unix timestamp and ensure it's in the future

@@ -22,21 +22,21 @@
                 <div class="contact-item">
                     <span class="icon">💬</span>
                     <div class="contact-text">
-                        <p>Discord: <span class="discord-username">daniel_faria</span></p>
+                        <p>Discord: <span class="discord-username"><%= process.env.CONTACT_DISCORD %></span></p>
                     </div>
                 </div>
                 
                 <div class="contact-item">
                     <span class="icon">📧</span>
                     <div class="contact-text">
-                        <p>Email: <a href="mailto:inquiries@danielfaria.cc">inquiries@danielfaria.cc</a></p>
+                        <p>Email: <a href="mailto:<%= process.env.CONTACT_EMAIL %>"><%= process.env.CONTACT_EMAIL %></a></p>
                     </div>
                 </div>
                 
                 <div class="contact-item">
                     <span class="icon">📱</span>
                     <div class="contact-text">
-                        <p>Phone: <a href="tel:774-418-5858">+1 (774) 418-5858</a></p>
+                        <p>Phone: <a href="tel:<%= process.env.CONTACT_PHONE.replace(/[^0-9+]/g, '') %>"><%= process.env.CONTACT_PHONE %></a></p>
                     </div>
                 </div>
             </div>
