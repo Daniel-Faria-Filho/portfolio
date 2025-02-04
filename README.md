@@ -1,5 +1,4 @@
-# portfolio
-
+# Hello! Welcome to my Open Source Portfolio code live at https://danielfaria.cc. To use this for youself, follow these instructions:
 # Environment Variables Setup Guide
 
 ## Initial Setup
