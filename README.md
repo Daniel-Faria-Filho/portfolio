@@ -68,3 +68,79 @@ Email Setup (Gmail Example):
 3. Use Gmail's SMTP settings and your app password
 
 Remember to keep your .env file secure and never share or commit your actual credentials. The .env.example file serves as a template and can be safely committed to version control.
+
+# Site Features & Administration Guide
+
+## Public Pages
+- **Home**: Landing page with introduction
+- **About**: Detailed information about you/your services
+- **Services**: List of available services and pricing
+- **Projects**: Portfolio of work and projects
+- **Contact**: Contact form and direct contact information
+
+## User Features
+- User registration and authentication
+- Profile customization
+- Billing management
+- Invoice viewing and payment
+
+## Administrative Features
+The admin account (set by ADMIN_EMAIL in .env) has access to:
+
+### User Management
+- Invite new users
+- Manage existing users
+- View user profiles
+- Edit user information
+
+### Billing & Subscriptions
+- Create new invoices
+- Manage existing invoices
+- Create subscriptions
+- Manage subscription status
+- View payment history
+
+### Admin Dropdown Menu
+Administrators have access to additional menu items:
+- **Invite Users**: Send registration invitations
+- **Manage Users**: User administration panel
+- **Create Invoice**: Generate new invoices
+- **Manage Invoices**: View and edit invoices
+- **Create Subscription**: Set up new subscriptions
+- **Manage Subscriptions**: Monitor active subscriptions
+- **Notes**: Internal admin notes system
+- **Portainer**: Server management interface (You can easily remove this from the admin dropdown menu if you don't need it. Remove it in header.ejs)
+
+### Content Management
+Administrators can:
+- Edit project entries in the projects page directly through the site when logged in with the admin account
+- Manage service offerings in the services page directly through the site when logged in with the admin account
+
+
+### Technical Access
+- Access to Portainer dashboard via redirect from the admin dropdown menu
+- System configuration options
+
+## Security Features
+- JWT-based authentication
+- Secure password reset system
+- Role-based access control
+- Encrypted data transmission
+- Secure payment processing via Stripe
+
+## Additional Features
+- Responsive design for mobile devices
+- Automated email notifications
+- File upload capabilities for profile pictures
+- Real-time updates
+- Secure data handling
+- Easy to customize
+- Easy to deploy
+- Easy to maintain
+- Easy to update
+- Easy to add new features
+- Easy to customize the design
+- Easy to deploy the application
+- Easy to maintain the application
+- Easy to update the application
+- Constantly being updated and improved
