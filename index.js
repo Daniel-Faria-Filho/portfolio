@@ -22,6 +22,7 @@ const billingRouter = require('./routes/billing');
 const { verifyEmailSetup } = require('./utils/email');
 const adminRouter = require('./routes/admin');
 const contentData = require('./data/content.json');
+const servicesData = require('./data/services.json');
 
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
@@ -107,7 +108,9 @@ app.get('/services', (req, res) => {
     res.render('services', { 
         success: req.query.success, 
         error: req.query.error,
-        user: res.locals.user 
+        user: res.locals.user,
+        services: servicesData,
+        servicesData: servicesData
     });
 });
 
@@ -521,6 +524,153 @@ app.get('/test-invoice', auth, async (req, res) => {
     } catch (error) {
         console.error('Error creating test invoice:', error);
         res.status(500).send('Error creating test invoice');
+    }
+});
+
+// Service management routes
+app.post('/add-service', async (req, res) => {
+    if (!req.user || req.user.email !== process.env.ADMIN_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Unauthorized' });
+    }
+
+    try {
+        const { type, title, price, features, additionalInfo } = req.body;
+        const services = require('./data/services.json');
+
+        // Generate new ID
+        const allServices = [...services.digitalServices, ...services.droneServices];
+        const maxId = Math.max(...allServices.map(s => s.id), 0);
+        const newId = maxId + 1;
+
+        const newService = {
+            id: newId,
+            title,
+            price,
+            features: features.filter(f => f.trim()),
+            ...(additionalInfo && { additionalInfo })
+        };
+
+        // Add to appropriate service type
+        if (type === 'digital') {
+            services.digitalServices.push(newService);
+        } else {
+            services.droneServices.push(newService);
+        }
+
+        // Save to file
+        await fs.promises.writeFile(
+            path.join(__dirname, 'data', 'services.json'),
+            JSON.stringify(services, null, 2)
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error adding service:', error);
+        res.status(500).json({ success: false, error: 'Error adding service' });
+    }
+});
+
+app.post('/edit-service', async (req, res) => {
+    if (!req.user || req.user.email !== process.env.ADMIN_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Unauthorized' });
+    }
+
+    try {
+        const { id, type, title, price, features, additionalInfo } = req.body;
+        const services = require('./data/services.json');
+
+        const serviceId = parseInt(id);
+        const serviceType = type === 'digital' ? 'digitalServices' : 'droneServices';
+
+        const serviceIndex = services[serviceType].findIndex(s => s.id === serviceId);
+        if (serviceIndex === -1) {
+            return res.status(404).json({ success: false, error: 'Service not found' });
+        }
+
+        services[serviceType][serviceIndex] = {
+            id: serviceId,
+            title,
+            price,
+            features: features.filter(f => f.trim()),
+            ...(additionalInfo && { additionalInfo })
+        };
+
+        await fs.promises.writeFile(
+            path.join(__dirname, 'data', 'services.json'),
+            JSON.stringify(services, null, 2)
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error editing service:', error);
+        res.status(500).json({ success: false, error: 'Error editing service' });
+    }
+});
+
+app.post('/delete-service', async (req, res) => {
+    if (!req.user || req.user.email !== process.env.ADMIN_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Unauthorized' });
+    }
+
+    try {
+        const { id } = req.body;
+        const services = require('./data/services.json');
+        const serviceId = parseInt(id);
+
+        // Check both service types
+        let found = false;
+        ['digitalServices', 'droneServices'].forEach(type => {
+            const index = services[type].findIndex(s => s.id === serviceId);
+            if (index !== -1) {
+                services[type].splice(index, 1);
+                found = true;
+            }
+        });
+
+        if (!found) {
+            return res.status(404).json({ success: false, error: 'Service not found' });
+        }
+
+        await fs.promises.writeFile(
+            path.join(__dirname, 'data', 'services.json'),
+            JSON.stringify(services, null, 2)
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting service:', error);
+        res.status(500).json({ success: false, error: 'Error deleting service' });
+    }
+});
+
+app.post('/update-service-order', async (req, res) => {
+    if (!req.user || req.user.email !== process.env.ADMIN_EMAIL) {
+        return res.status(403).json({ success: false, error: 'Unauthorized' });
+    }
+
+    try {
+        const { type, order } = req.body;
+        const services = require('./data/services.json');
+        const serviceType = type === 'digital' ? 'digitalServices' : 'droneServices';
+
+        // Create a new array with the updated order
+        const reorderedServices = order.map(id => 
+            services[serviceType].find(s => s.id === id)
+        );
+
+        // Update the services object
+        services[serviceType] = reorderedServices;
+
+        // Save to file
+        await fs.promises.writeFile(
+            path.join(__dirname, 'data', 'services.json'),
+            JSON.stringify(services, null, 2)
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating service order:', error);
+        res.status(500).json({ success: false, error: 'Error updating service order' });
     }
 });
 

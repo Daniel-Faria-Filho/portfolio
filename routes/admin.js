@@ -8,18 +8,14 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const Note = require('../models/Note');
 const fs = require('fs').promises;
 const path = require('path');
+const contentPath = path.join(__dirname, '..', 'data', 'content.json');
 
 // Middleware to check if user is admin
 const isAdmin = (req, res, next) => {
-    if (!req.user) {
+    if (!req.user || req.user.email !== process.env.ADMIN_EMAIL) {
         return res.status(403).json({ error: 'Unauthorized' });
     }
-    
-    if (req.user.email === 'inbox@danielfaria.cc') {
-        next();
-    } else {
-        res.status(403).json({ error: 'Unauthorized' });
-    }
+    next();
 };
 
 router.get('/invite', isAdmin, (req, res) => {
@@ -604,15 +600,12 @@ router.get('/invoices/:id', isAdmin, async (req, res) => {
 router.post('/content', isAdmin, async (req, res) => {
     try {
         const { type, content } = req.body;
-        const contentPath = path.join(__dirname, '../data/content.json');
-        
-        // Read existing content
         const contentData = JSON.parse(await fs.readFile(contentPath, 'utf8'));
         
-        // Update content
+        // Update the specified content type
         contentData[type] = content;
         
-        // Write back to file
+        // Write the updated content back to file
         await fs.writeFile(contentPath, JSON.stringify(contentData, null, 2));
         
         res.json({ success: true });

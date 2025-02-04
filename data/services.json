@@ -1,0 +1,81 @@
+{
+  "digitalServices": [
+    {
+      "id": 1,
+      "title": "Basic Website",
+      "price": "$75 Setup",
+      "features": [
+        "Static pages & information",
+        "First year hosting included",
+        "Mobile responsive design",
+        "Basic SEO optimization",
+        "$25/year hosting renewal"
+      ],
+      "additionalInfo": "Domain registration: $5–$30/year"
+    },
+    {
+      "id": 2,
+      "title": "Advanced Website",
+      "price": "$250 Setup",
+      "features": [
+        "User account management",
+        "Payment integration",
+        "Admin dashboard",
+        "First year hosting included",
+        "$25/year hosting renewal"
+      ],
+      "additionalInfo": "Domain registration: $10–$30/year"
+    },
+    {
+      "id": 3,
+      "title": "Professional Logo Design",
+      "price": "$25 Design Fee",
+      "features": [
+        "Multiple file formats",
+        "High-resolution files",
+        "Source files included",
+        "2-5 revision rounds if needed"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Custom Apparel & Accessories",
+      "price": "$50 Design Fee",
+      "features": [
+        "Custom design creation",
+        "Multiple format options",
+        "Print-ready files",
+        "Design consultation",
+        "Materials cost not included"
+      ]
+    }
+  ],
+  "droneServices": [
+    {
+      "id": 5,
+      "title": "Real Estate Aerial Photography",
+      "price": "$200 per Property",
+      "features": [
+        "15-minute professional shoot",
+        "High-resolution photos",
+        "4K video footage",
+        "Professional editing",
+        "Google Drive delivery",
+        "Quick turnaround time"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Wedding & Event Coverage",
+      "price": "$450 per Event",
+      "features": [
+        "Up to 2 hours of coverage",
+        "Cinematic aerial footage",
+        "High-resolution photos",
+        "Professional editing",
+        "Licensed & insured operation",
+        "Digital delivery"
+      ]
+    }
+  ]
+}

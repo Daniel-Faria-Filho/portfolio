@@ -116,6 +116,9 @@ Administrators have access to additional menu items:
 Administrators can:
 - Edit project entries in the projects page directly through the site when logged in with the admin account
 - Manage service offerings in the services page directly through the site when logged in with the admin account
+- Edit the about page content directly through the site when logged in with the admin account
+- Edit the home page content directly through the site when logged in with the admin account
+
 
 
 ### Technical Access

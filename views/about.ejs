@@ -7,14 +7,16 @@
         <img src="/images/plane-photo-2.jpg" alt="Me with aircraft 2">
     </div>
     <div class="bio">
-        <% if (user && user.email === 'inbox@danielfaria.cc') { %>
-            <div class="editable-content" data-type="bio">
+        <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+            <div class="content-card" data-type="bio">
+                <div class="admin-controls">
+                    <button onclick="editContent('bio')" class="icon-btn edit-btn">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
                 <div id="bio-text">
                     <%- content.bio %>
                 </div>
-                <button class="edit-btn" onclick="editContent('bio')">
-                    <i class="fas fa-edit"></i>
-                </button>
             </div>
         <% } else { %>
             <%- content.bio %>
@@ -24,25 +26,32 @@
 
 <%- include('partials/footer') %>
 
-<% if (user && user.email === 'inbox@danielfaria.cc') { %>
+<% if (user && user.email === process.env.ADMIN_EMAIL) { %>
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Edit Content</h3>
-            <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            <button type="button" class="close-btn" onclick="closeEditModal()">&times;</button>
         </div>
         <form id="editForm">
-            <textarea id="contentEditor" rows="10"></textarea>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button type="submit" class="btn-primary">Save Changes</button>
+            <div class="form-group">
+                <label for="contentEditor">Content</label>
+                <textarea id="contentEditor" name="content" required></textarea>
             </div>
+            <button type="submit" class="submit-button">Save Changes</button>
         </form>
     </div>
 </div>
 
 <script>
 let currentEditingType = '';
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.className === 'modal') {
+        closeEditModal();
+    }
+}
 
 function editContent(type) {
     currentEditingType = type;
@@ -87,27 +96,51 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
 </script>
 
 <style>
-.editable-content {
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-card {
     position: relative;
-    padding-right: 40px;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    margin: 2rem 0;
+}
+
+.content-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.admin-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
 }
 
 .edit-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: none;
-    border: none;
     color: var(--accent);
-    cursor: pointer;
-    padding: 8px;
-    opacity: 0.6;
-    transition: all 0.3s ease;
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
 }
 
 .edit-btn:hover {
-    opacity: 1;
-    transform: scale(1.1);
+    background: rgba(52, 152, 219, 0.2);
 }
 
 .modal {
@@ -117,7 +150,7 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -126,19 +159,75 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
 .modal-content {
     background: var(--card-bg);
     padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
+    border-radius: 10px;
+    width: 95%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-#contentEditor {
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
     width: 100%;
-    margin: 1rem 0;
     padding: 1rem;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--accent);
     border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+    min-height: 400px;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: 'Source Code Pro', monospace;
+    resize: vertical;
+    tab-size: 4;
+    white-space: pre-wrap;
+}
+
+.submit-button {
+    background: var(--gradient);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    color: var(--accent);
+    transform: scale(1.1);
 }
 </style>
 <% } %> 

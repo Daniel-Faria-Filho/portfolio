@@ -6,98 +6,487 @@
 
     <div class="services-category web-services">
         <h2>Digital Services</h2>
+        <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+            <button onclick="showServiceForm('digital')" class="admin-button">
+                <i class="fas fa-plus"></i> Add Digital Service
+            </button>
+        <% } %>
         <div class="services-grid">
-            <div class="service-card">
-                <h3>Basic Website</h3>
-                <div class="price">$75 Setup</div>
-                <ul class="features">
-                    <li>Static pages & information</li>
-                    <li>First year hosting included</li>
-                    <li>Mobile responsive design</li>
-                    <li>Basic SEO optimization</li>
-                    <li>$25/year hosting renewal</li>
-                </ul>
-                <div class="additional-info">
-                    Domain registration: $10–$30/year
+            <% services.digitalServices.forEach((service, index) => { %>
+                <div class="service-card" draggable="<%= user && user.email === process.env.ADMIN_EMAIL ? 'true' : 'false' %>" data-id="<%= service.id %>" data-type="digital" data-index="<%= index %>">
+                    <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+                        <div class="drag-handle">
+                            <i class="fas fa-grip-lines"></i>
+                        </div>
+                        <div class="admin-controls">
+                            <button onclick="editService(<%= service.id %>)" class="icon-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteService(<%= service.id %>)" class="icon-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    <% } %>
+                    <h3><%= service.title %></h3>
+                    <div class="price"><%= service.price %></div>
+                    <ul class="features">
+                        <% service.features.forEach(feature => { %>
+                            <li><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                    <% if (service.additionalInfo) { %>
+                        <div class="additional-info"><%= service.additionalInfo %></div>
+                    <% } %>
                 </div>
-            </div>
-
-            <div class="service-card">
-                <h3>Advanced Website</h3>
-                <div class="price">$250 Setup</div>
-                <ul class="features">
-                    <li>User account management</li>
-                    <li>Payment integration</li>
-                    <li>Admin dashboard</li>
-                    <li>First year hosting included</li>
-                    <li>$25/year hosting renewal</li>
-                </ul>
-                <div class="additional-info">
-                    Domain registration: $10–$30/year
-                </div>
-            </div>
-
-            <div class="service-card">
-                <h3>Professional Logo Design</h3>
-                <div class="price">$25 Design Fee</div>
-                <ul class="features">
-                    <li>Multiple file formats</li>
-                    <li>High-resolution files</li>
-                    <li>Source files included</li>
-                    <li>2-5 revision rounds if needed</li>
-                </ul>
-            </div>
-
-            <div class="service-card">
-                <h3>Custom Apparel & Accessories</h3>
-                <div class="price">$50 Design Fee</div>
-                <ul class="features">
-                    <li>Custom design creation</li>
-                    <li>Multiple format options</li>
-                    <li>Print-ready files</li>
-                    <li>Design consultation</li>
-                    <li>Materials cost not included</li>
-                </ul>
-            </div>
+            <% }); %>
         </div>
     </div>
 
     <div class="services-category drone-services">
         <h2>Aerial Drone Photography & Videography in Massachusetts</h2>
+        <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+            <button onclick="showServiceForm('drone')" class="admin-button">
+                <i class="fas fa-plus"></i> Add Drone Service
+            </button>
+        <% } %>
         <div class="services-grid">
-            <div class="service-card">
-                <h3>Real Estate Aerial Photography</h3>
-                <div class="price">$200 per Property</div>
-                <ul class="features">
-                    <li>15-minute professional shoot</li>
-                    <li>High-resolution photos</li>
-                    <li>4K video footage</li>
-                    <li>Professional editing</li>
-                    <li>Google Drive delivery</li>
-                    <li>Quick turnaround time</li>
-                </ul>
-            </div>
-
-            <div class="service-card">
-                <h3>Wedding & Event Coverage</h3>
-                <div class="price">$450 per Event</div>
-                <ul class="features">
-                    <li>Up to 2 hours of coverage</li>
-                    <li>Cinematic aerial footage</li>
-                    <li>High-resolution photos</li>
-                    <li>Professional editing</li>
-                    <li>Licensed & insured operation</li>
-                    <li>Digital delivery</li>
-                </ul>
-            </div>
+            <% services.droneServices.forEach(service => { %>
+                <div class="service-card" data-id="<%= service.id %>">
+                    <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+                        <div class="admin-controls">
+                            <button onclick="editService(<%= service.id %>)" class="icon-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteService(<%= service.id %>)" class="icon-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    <% } %>
+                    <h3><%= service.title %></h3>
+                    <div class="price"><%= service.price %></div>
+                    <ul class="features">
+                        <% service.features.forEach(feature => { %>
+                            <li><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% }); %>
         </div>
     </div>
 
-    <div class="cta-section">
-        <h3>Ready to Get Started?</h3>
-        <p>Contact me to discuss your project needs and receive a custom quote.</p>
-        <a href="/contact" class="cta-button">Get in Touch</a>
-    </div>
+    <!-- Service Edit Modal -->
+    <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+        <div id="serviceModal" class="modal">
+            <div class="modal-content">
+                <h3 id="modalTitle">Edit Service</h3>
+                <form id="serviceForm">
+                    <input type="hidden" id="serviceId" name="id">
+                    <input type="hidden" id="serviceType" name="type">
+                    
+                    <div class="form-group">
+                        <label for="title">Service Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="text" id="price" name="price" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="features">Features (one per line)</label>
+                        <textarea id="features" name="features" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="additionalInfo">Additional Info (optional)</label>
+                        <input type="text" id="additionalInfo" name="additionalInfo">
+                    </div>
+                    
+                    <button type="submit" class="submit-button">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <h3>Confirm Delete</h3>
+                <p>Are you sure you want to delete this service?</p>
+                <div class="modal-actions">
+                    <button onclick="confirmDelete()" class="delete-btn">Delete</button>
+                    <button onclick="closeConfirmModal()" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    <% } %>
 </section>
+
+<style>
+/* Button Styles from projects.ejs */
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn {
+    color: var(--accent);
+}
+
+.edit-btn:hover {
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateY(-2px);
+}
+
+.delete-btn {
+    color: #e74c3c;
+}
+
+.delete-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Add Service Button Styles */
+.admin-button {
+    margin-top: 2rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--gradient);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.admin-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+/* Update existing admin-controls positioning */
+.admin-controls {
+    position: absolute;
+    top: 1rem;
+    right: 3.5rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+/* Update service card styles */
+.service-card {
+    position: relative;
+    cursor: default;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Update services grid layout */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Add your existing styles here and these new ones: */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+.form-group textarea {
+    min-height: 150px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.service-card {
+    position: relative;
+    cursor: default;
+}
+
+.service-card[draggable="true"] {
+    cursor: grab;
+}
+
+.service-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.drag-handle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+    cursor: grab;
+}
+
+.service-card:hover .drag-handle {
+    opacity: 1;
+}
+
+/* Container styles */
+.services-category {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Features list styling */
+.features {
+    flex-grow: 1;
+    margin: 1rem 0;
+}
+
+.price {
+    margin-top: auto;
+    font-weight: bold;
+    color: var(--accent);
+}
+</style>
+
+<script>
+const services = <%- JSON.stringify(services) %>;
+
+let currentServiceId = null;
+
+function showServiceForm(type) {
+    document.getElementById('serviceModal').style.display = 'flex';
+    document.getElementById('modalTitle').textContent = 'Add New Service';
+    document.getElementById('serviceForm').reset();
+    document.getElementById('serviceType').value = type;
+}
+
+function editService(id) {
+    const service = findService(id);
+    if (!service) return;
+
+    document.getElementById('serviceModal').style.display = 'flex';
+    document.getElementById('modalTitle').textContent = 'Edit Service';
+    document.getElementById('serviceId').value = id;
+    document.getElementById('title').value = service.title;
+    document.getElementById('price').value = service.price;
+    document.getElementById('features').value = service.features.join('\n');
+    document.getElementById('additionalInfo').value = service.additionalInfo || '';
+    document.getElementById('serviceType').value = 
+        services.digitalServices.find(s => s.id === id) ? 'digital' : 'drone';
+}
+
+function findService(id) {
+    return [...services.digitalServices, ...services.droneServices]
+        .find(s => s.id === id);
+}
+
+function deleteService(id) {
+    currentServiceId = id;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+
+function confirmDelete() {
+    if (!currentServiceId) return;
+    
+    fetch('/delete-service', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentServiceId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error deleting service');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting service');
+    });
+}
+
+document.getElementById('serviceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        id: document.getElementById('serviceId').value,
+        type: document.getElementById('serviceType').value,
+        title: document.getElementById('title').value,
+        price: document.getElementById('price').value,
+        features: document.getElementById('features').value.split('\n').filter(f => f.trim()),
+        additionalInfo: document.getElementById('additionalInfo').value
+    };
+
+    const url = formData.id ? '/edit-service' : '/add-service';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error saving service');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving service');
+    });
+});
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
+    }
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+    currentServiceId = null;
+}
+
+// Add drag and drop handlers
+<% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+    const serviceGrids = document.querySelectorAll('.services-grid');
+    
+    serviceGrids.forEach(grid => {
+        grid.addEventListener('dragover', e => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(grid, e.clientY);
+            const draggable = document.querySelector('.dragging');
+            if (afterElement == null) {
+                grid.appendChild(draggable);
+            } else {
+                grid.insertBefore(draggable, afterElement);
+            }
+        });
+    });
+
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('dragstart', () => {
+            card.classList.add('dragging');
+        });
+
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            saveNewOrder(card.dataset.type);
+        });
+    });
+<% } %>
+
+async function saveNewOrder(type) {
+    const grid = document.querySelector(`[data-type="${type}"]`).closest('.services-grid');
+    const cards = grid.querySelectorAll('.service-card');
+    const newOrder = Array.from(cards).map(card => parseInt(card.dataset.id));
+    
+    try {
+        const response = await fetch('/update-service-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type, order: newOrder })
+        });
+        
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Failed to update service order');
+        }
+    } catch (error) {
+        console.error('Error saving service order:', error);
+        alert('Failed to save the new service order');
+        location.reload();
+    }
+}
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.service-card:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+</script>
 
 <%- include('partials/footer') %> 
