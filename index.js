@@ -88,10 +88,10 @@ app.get('/', (req, res) => {
         content: contentData,
         meta: {
             title: process.env.SHOW_DRONE_SERVICES === "true" 
-                ? "Daniel Faria - Web Development & Drone Services in Massachusetts"
+                ? `Daniel Faria - Web Development & Drone Services in ${process.env.STATE_NAME}`
                 : "Daniel Faria - Web Development Services",
             description: process.env.SHOW_DRONE_SERVICES === "true"
-                ? 'Professional web development, drone photography, and digital solutions. Expert tech services in Massachusetts.'
+                ? `Professional web development, drone photography, and digital solutions. Expert tech services in ${process.env.STATE_NAME}.`
                 : 'Professional web development and digital solutions. Expert tech services.',
             originalUrl: req.originalUrl
         }
@@ -104,10 +104,10 @@ app.get('/about', (req, res) => {
         content: contentData,
         meta: {
             title: process.env.SHOW_DRONE_SERVICES === "true"
-                ? "About Daniel Faria - Web Developer & Drone Photographer in MA"
+                ? `About Daniel Faria - Web Developer & Drone Photographer in ${process.env.STATE_CODE}`
                 : "About Daniel Faria - Web Developer",
             description: process.env.SHOW_DRONE_SERVICES === "true"
-                ? 'Learn about Daniel Faria, a professional web developer and drone photographer based in Massachusetts.'
+                ? `Learn about Daniel Faria, a professional web developer and drone photographer based in ${process.env.STATE_NAME}.`
                 : 'Learn about Daniel Faria, a professional web developer.',
             originalUrl: req.originalUrl
         }
@@ -136,7 +136,7 @@ app.get('/contact', (req, res) => {
         user: req.user,
         meta: {
             title: process.env.SHOW_DRONE_SERVICES === "true"
-                ? 'Contact Daniel Faria | Web Development & Drone Services in MA'
+                ? `Contact Daniel Faria | Web Development & Drone Services in ${process.env.STATE_CODE}`
                 : 'Contact Daniel Faria | Web Development Services',
             description: process.env.SHOW_DRONE_SERVICES === "true"
                 ? 'Get in touch for professional web development, drone photography, and digital solutions in Massachusetts.'

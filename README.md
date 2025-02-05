@@ -16,9 +16,18 @@ Feature Flags:
   - When disabled:
     - Removes drone services section from services page
     - Updates meta titles and descriptions to exclude drone references
-    - Removes location-specific content (MA/Massachusetts) since web services are remote
+    - Removes location-specific content since web services are remote
     - Adjusts schema markup to exclude local business data
     - Updates navigation and UI elements accordingly
+
+Location Configuration (used when SHOW_DRONE_SERVICES is "true"):
+- STATE_NAME: Full name of your state (e.g., "California")
+- STATE_CODE: Two-letter state code (e.g., "CA")
+  - Used in:
+    - SEO titles and descriptions
+    - Services page headers
+    - Schema markup for local business
+    - Contact information
 
 Site Configuration:
 - SITE_NAME: Your name as displayed throughout the site

@@ -44,7 +44,7 @@
 
     <% if (process.env.SHOW_DRONE_SERVICES === "true") { %>
     <div class="services-category drone-services">
-        <h2>Aerial Drone Photography & Videography in Massachusetts</h2>
+        <h2>Aerial Drone Photography & Videography in <%= process.env.STATE_NAME %></h2>
         <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
             <button onclick="showServiceForm('drone')" class="admin-button">
                 <i class="fas fa-plus"></i> Add Drone Service
@@ -506,7 +506,7 @@ function getDragAfterElement(container, y) {
   <% if (process.env.SHOW_DRONE_SERVICES === "true") { %>
   "address": {
     "@type": "PostalAddress",
-    "addressRegion": "MA",
+    "addressRegion": "<%= process.env.STATE_CODE %>",
     "addressCountry": "US"
   },
   <% } %>
