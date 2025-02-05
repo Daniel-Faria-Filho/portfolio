@@ -489,4 +489,23 @@ function getDragAfterElement(container, y) {
 }
 </script>
 
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+
+<!-- Add this before the closing </body> tag -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "<%= process.env.SITE_NAME %>",
+  "image": "https://<%= process.env.SITE_DOMAIN %>/images/DF2.png",
+  "description": "Professional tech services including web development and drone photography",
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "MA",
+    "addressCountry": "US"
+  },
+  "priceRange": "$$$",
+  "telephone": "<%= process.env.CONTACT_PHONE %>",
+  "email": "<%= process.env.CONTACT_EMAIL %>"
+}
+</script> 

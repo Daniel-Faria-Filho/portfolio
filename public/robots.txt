@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /administration/
+Disallow: /billing/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /billing-management/
+Disallow: /invoices/
+Disallow: /subscriptions/
+Disallow: /user/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /notes/
+
+Sitemap: https://danielfaria.cc/sitemap.xml 

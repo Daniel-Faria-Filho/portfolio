@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= process.env.SITE_NAME %><%= process.env.SITE_TITLE_SUFFIX %></title>
+    <meta name="description" content="Professional tech services including web development, drone photography, and digital solutions by Daniel Faria. Based in Massachusetts.">
+    <meta name="keywords" content="web development, drone photography, tech services, Massachusetts, Daniel Faria">
+    <meta name="author" content="Daniel Faria">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="<%= process.env.SITE_NAME %><%= process.env.SITE_TITLE_SUFFIX %>">
+    <meta property="og:description" content="Professional tech services including web development, drone photography, and digital solutions by Daniel Faria. Based in Massachusetts.">
+    <meta property="og:image" content="https://danielfaria.cc/images/DF2.png">
+    <meta property="og:url" content="https://<%= process.env.SITE_DOMAIN %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://<%= process.env.SITE_DOMAIN %><%= typeof originalUrl !== 'undefined' ? originalUrl : '' %>">
+    <title><%= meta.title %></title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/png" href="/images/DF2.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

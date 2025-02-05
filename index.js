@@ -38,6 +38,11 @@ app.use(fileUpload({
 }));
 
 // Then add the user authentication middleware
+app.use((req, res, next) => {
+    res.locals.originalUrl = req.originalUrl;
+    next();
+});
+
 app.use(async (req, res, next) => {
     if (req.cookies.token) {
         try {
@@ -80,27 +85,50 @@ function saveProjects(projects) {
 app.get('/', (req, res) => {
     res.render('home', { 
         user: req.user,
-        content: contentData
+        content: contentData,
+        meta: {
+            title: "Daniel Faria - Web Development & Drone Services in Massachusetts",
+            description: 'Professional web development, drone photography, and digital solutions. Expert tech services in Massachusetts.',
+            originalUrl: req.originalUrl
+        }
     });
 });
 
 app.get('/about', (req, res) => {
     res.render('about', { 
         user: req.user,
-        content: contentData
+        content: contentData,
+        meta: {
+            title: "About Daniel Faria - Web Developer & Drone Photographer in MA",
+            description: 'Learn about Daniel Faria, a professional web developer and drone photographer based in Massachusetts.',
+            originalUrl: req.originalUrl
+        }
     });
 });
 
 app.get('/projects', (req, res) => {
     const projects = getProjects();
-    res.render('projects', { projects, user: res.locals.user });
+    res.render('projects', { 
+        projects: getProjects(),
+        user: res.locals.user,
+        meta: {
+            title: 'Web Development & Drone Photography Portfolio | Daniel Faria',
+            description: 'View our portfolio of web development projects, drone photography work, and digital solutions.',
+            originalUrl: req.originalUrl
+        }
+    });
 });
 
 app.get('/contact', (req, res) => {
     res.render('contact', { 
         success: req.query.success, 
         error: req.query.error,
-        user: res.locals.user 
+        user: res.locals.user,
+        meta: {
+            title: 'Contact Daniel Faria | Web Development & Drone Services in MA',
+            description: 'Get in touch for professional web development, drone photography, and digital solutions in Massachusetts.',
+            originalUrl: req.originalUrl
+        }
     });
 });
 
@@ -110,7 +138,12 @@ app.get('/services', (req, res) => {
         error: req.query.error,
         user: res.locals.user,
         services: servicesData,
-        servicesData: servicesData
+        servicesData: servicesData,
+        meta: {
+            title: 'Professional Web Development & Drone Services | Daniel Faria',
+            description: 'Professional web development, logo design, and drone photography services. Affordable rates and quality results.',
+            originalUrl: req.originalUrl
+        }
     });
 });
 
