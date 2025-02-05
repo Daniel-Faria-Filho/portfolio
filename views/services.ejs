@@ -42,6 +42,7 @@
         </div>
     </div>
 
+    <% if (process.env.SHOW_DRONE_SERVICES === "true") { %>
     <div class="services-category drone-services">
         <h2>Aerial Drone Photography & Videography in Massachusetts</h2>
         <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
@@ -73,6 +74,7 @@
             <% }); %>
         </div>
     </div>
+    <% } %>
 
     <!-- Service Edit Modal -->
     <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
@@ -498,12 +500,16 @@ function getDragAfterElement(container, y) {
   "@type": "ProfessionalService",
   "name": "<%= process.env.SITE_NAME %>",
   "image": "https://<%= process.env.SITE_DOMAIN %>/images/DF2.png",
-  "description": "Professional tech services including web development and drone photography",
+  "description": "<%= process.env.SHOW_DRONE_SERVICES === 'true' 
+      ? 'Professional tech services including web development and drone photography'
+      : 'Professional tech services including web development' %>",
+  <% if (process.env.SHOW_DRONE_SERVICES === "true") { %>
   "address": {
     "@type": "PostalAddress",
     "addressRegion": "MA",
     "addressCountry": "US"
   },
+  <% } %>
   "priceRange": "$$$",
   "telephone": "<%= process.env.CONTACT_PHONE %>",
   "email": "<%= process.env.CONTACT_EMAIL %>"

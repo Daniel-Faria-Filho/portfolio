@@ -13,7 +13,13 @@
     <meta property="og:url" content="https://<%= process.env.SITE_DOMAIN %>">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="canonical" href="https://<%= process.env.SITE_DOMAIN %><%= typeof originalUrl !== 'undefined' ? originalUrl : '' %>">
-    <title><%= meta.title %></title>
+    <title>
+        <% if (typeof meta !== 'undefined' && meta.title) { %>
+            <%= meta.title %>
+        <% } else { %>
+            <%= process.env.SITE_NAME %><%= process.env.SITE_TITLE_SUFFIX %>
+        <% } %>
+    </title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/png" href="/images/DF2.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

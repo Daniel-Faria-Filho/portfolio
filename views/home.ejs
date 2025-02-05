@@ -2,7 +2,18 @@
 
 <section class="hero">
     <h1>Who is Daniel Faria?</h1>
-    <p class="subtitle">Disciple of Christ | Web Developer | Commercial Drone Operator | Student Pilot</p>
+    <% if (user && user.email === process.env.ADMIN_EMAIL) { %>
+        <div class="editable-content" data-type="subtitle">
+            <div id="subtitle-text" class="subtitle">
+                <%- content.subtitle %>
+            </div>
+            <button class="edit-btn" onclick="editContent('subtitle')">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+    <% } else { %>
+        <p class="subtitle"><%- content.subtitle %></p>
+    <% } %>
 </section>
 
 <section class="intro">

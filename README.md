@@ -11,6 +11,15 @@ Hello! Welcome to my Open Source Portfolio code live at https://danielfaria.cc. 
 
 ## Variable Explanations
 
+Feature Flags:
+- SHOW_DRONE_SERVICES: Set to "true" to enable drone services throughout the site, "false" to hide all drone-related content
+  - When disabled:
+    - Removes drone services section from services page
+    - Updates meta titles and descriptions to exclude drone references
+    - Removes location-specific content (MA/Massachusetts) since web services are remote
+    - Adjusts schema markup to exclude local business data
+    - Updates navigation and UI elements accordingly
+
 Site Configuration:
 - SITE_NAME: Your name as displayed throughout the site
 - SITE_TITLE_SUFFIX: Text appended to browser tab titles
