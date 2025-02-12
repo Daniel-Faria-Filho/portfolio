@@ -1171,14 +1171,32 @@ html {
     transition: transform 0.3s ease;
 }
 
-.profile-dropdown:hover .dropdown-arrow {
-    transform: rotate(180deg);
+/* Desktop hover effects only */
+@media (min-width: 769px) {
+    .profile-dropdown:hover .dropdown-arrow {
+        transform: rotate(180deg);
+    }
+    
+    .profile-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
 }
 
-.profile-dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+/* Mobile click effects */
+@media (max-width: 768px) {
+    .dropdown-menu.show-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    /* Fix arrow animation for mobile clicks */
+    .profile-dropdown .dropdown-menu.show-dropdown + .profile-trigger .dropdown-arrow,
+    .profile-trigger:has(+ .dropdown-menu.show-dropdown) .dropdown-arrow {
+        transform: rotate(180deg);
+    }
 }
 
 .dropdown-menu {

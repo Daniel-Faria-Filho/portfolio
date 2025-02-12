@@ -155,13 +155,13 @@
         const menuToggle = document.querySelector('.menu-toggle');
         const mainNav = document.querySelector('.main-nav');
         const body = document.body;
+        const profileTrigger = document.querySelector('.profile-trigger');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
 
         menuToggle.addEventListener('click', () => {
             mainNav.classList.toggle('show');
             menuToggle.classList.toggle('active');
             body.classList.toggle('menu-open');
-            
-            // Change menu icon
             menuToggle.textContent = mainNav.classList.contains('show') ? '×' : '☰';
         });
 
@@ -186,21 +186,17 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileTrigger = document.querySelector('.profile-trigger');
-            const dropdownMenu = document.querySelector('.dropdown-menu');
-
-            profileTrigger.addEventListener('click', function(e) {
-                e.stopPropagation();
+        profileTrigger.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
                 dropdownMenu.classList.toggle('show-dropdown');
-            });
+            }
+        });
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.remove('show-dropdown');
-                }
-            });
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && !profileTrigger.contains(e.target)) {
+                dropdownMenu.classList.remove('show-dropdown');
+            }
         });
     </script>
 </body>

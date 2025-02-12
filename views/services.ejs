@@ -214,7 +214,33 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 0;
+    width: 100%;
+}
+
+/* Container styles */
+.services-category {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .services-category {
+        padding: 0rem;
+    }
+    
+    .service-card {
+        width: 100%;
+        margin: 0 auto;
+        max-width: 400px;  /* Limit max width on mobile */
+    }
 }
 
 /* Add your existing styles here and these new ones: */
@@ -295,13 +321,6 @@
 
 .service-card:hover .drag-handle {
     opacity: 1;
-}
-
-/* Container styles */
-.services-category {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
 }
 
 /* Features list styling */
