@@ -36,9 +36,9 @@
                             <% products.forEach(product => { %>
                                 <option value="<%= product.id %>" 
                                         data-name="<%= product.name %>" 
-                                        data-price="<%= product.default_price.unit_amount/100 %>"
-                                        data-price-id="<%= product.default_price.id %>">
-                                    <%= product.name %> - $<%= product.default_price.unit_amount/100 %>
+                                        data-price="<%= product.default_price && product.default_price.unit_amount ? product.default_price.unit_amount/100 : 0 %>"
+                                        data-price-id="<%= product.default_price ? product.default_price.id : '' %>">
+                                    <%= product.name %> - $<%= product.default_price && product.default_price.unit_amount ? product.default_price.unit_amount/100 : 'Price not set' %>
                                 </option>
                             <% }); %>
                         </select>
