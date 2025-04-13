@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "9002:9002"  # Now correctly mapping port 9002 to 9002
+    environment:
+      - SITE_NAME=Daniel Faria
+      - SITE_TITLE_SUFFIX= - Tech Services
+      - SITE_LOGO_TEXT=<Daniel.Faria>
+      - SITE_DOMAIN=danielfaria.cc
+      - SHOW_DRONE_SERVICES=true
+      - STATE_NAME=Massachusetts
+      - STATE_CODE=MA
+      - CONTACT_EMAIL=inquiries@danielfaria.cc
+      - CONTACT_PHONE=+1 (774) 418-5858
+      - CONTACT_DISCORD=daniel_faria
+      - GITHUB_URL=https://github.com/Daniel-Faria-Filho/
+      - LINKEDIN_URL=https://www.linkedin.com/in/daniel-faria-filho-87688834a/
+      - ADMIN_EMAIL=inbox@danielfaria.cc
+      - COPYRIGHT_NAME=Daniel B. Faria Filho
+      - HOSTING_YEARLY_PRICE=${HOSTING_YEARLY_PRICE}
+      - HOSTING_YEARLY_PRICE_ID=${HOSTING_YEARLY_PRICE_ID}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
+      - EMAIL_NOREPLY_ADDRESS=${EMAIL_NOREPLY_ADDRESS}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
