@@ -166,3 +166,64 @@ Administrators can:
 - Easy to maintain the application
 - Easy to update the application
 - Constantly being updated and improved
+
+# Docker Deployment
+
+The project includes Docker configuration files for easy deployment. Here's how to use them:
+
+## Understanding the Configuration
+
+### docker-compose.yml
+The included docker-compose.yml uses environment variables from your .env file. You can either:
+1. Use the variables from your .env file (recommended for development):
+```yaml
+environment:
+  - SITE_NAME=${SITE_NAME}
+  - SITE_TITLE_SUFFIX=${SITE_TITLE_SUFFIX}
+  # ... other environment variables
+```
+
+2. Or hardcode your values (easier for production):
+```yaml
+environment:
+  - SITE_NAME=Your Name
+  - SITE_TITLE_SUFFIX= - Your Suffix
+  # ... other environment variables
+```
+
+The configuration includes:
+- Port mapping to 9002
+- Volume mapping for live development
+- Automatic container restart
+
+### Dockerfile
+The included Dockerfile:
+- Uses Node.js 18
+- Sets up the application directory
+- Installs dependencies
+- Exposes port 9002
+- Starts the application with `node .`
+
+## Running the Application
+
+1. Make sure your .env file is set up with your credentials
+2. Start the container:
+```bash
+docker-compose up --build
+```
+
+3. For background running:
+```bash
+docker-compose up -d --build
+```
+
+4. To stop:
+```bash
+docker-compose down
+```
+
+Your application will be available at http://localhost:9002
+
+## Development vs Production
+- Development: Keep the volume mappings for live code updates
+- Production: Consider removing volume mappings for better security
