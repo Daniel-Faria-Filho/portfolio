@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 9002
 
-CMD ["npm", "start"]
+CMD ["node", "."]
