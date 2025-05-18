@@ -40,7 +40,7 @@ router.post('/invite', isAdmin, async (req, res) => {
 
         // Generate setup token
         const setupToken = crypto.randomBytes(32).toString('hex');
-        const tokenExpiry = Date.now() + (5 * 24 * 60 * 60 * 1000); // 5 days
+        const tokenExpiry = Date.now() + (90 * 24 * 60 * 60 * 1000); // 90 days
 
         // Create user with temporary token
         user = new User({

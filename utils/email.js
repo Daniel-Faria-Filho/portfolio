@@ -67,7 +67,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
 
 const sendInvitationEmail = async (email, setupToken) => {
     try {
-        const setupUrl = `http://localhost:9002/auth/setup/${setupToken}`;
+        const setupUrl = `https://${process.env.SITE_DOMAIN}/auth/setup/${setupToken}`;
         
         const mailOptions = {
             from: {
@@ -91,7 +91,7 @@ const sendInvitationEmail = async (email, setupToken) => {
                             display: inline-block;
                         ">Set Up Account</a>
                     </div>
-                    <p style="color: #666; font-size: 14px;">This link will expire in 5 days.</p>
+                    <p style="color: #666; font-size: 14px;">This link will expire in 90 days.</p>
                 </div>
             `
         };
